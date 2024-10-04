@@ -1,0 +1,6 @@
+.env
+.venv/
+saved_fields.json
+test.py
+__pycache__/
+out/
