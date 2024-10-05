@@ -49,5 +49,5 @@ class Generator:
             # Add other models and their token limits here
         }.get(self.model, 4096)  # Default
 
-    def estimate_token_count(prompt: str) -> int:
+    def estimate_token_count(self, prompt: str) -> int:
         return len(prompt)/3.8   # Rough estimate: 1 token ≈ 3.8 characters

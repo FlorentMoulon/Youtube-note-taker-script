@@ -42,11 +42,11 @@ class Parser:
             content = content.replace("{{"+variable+"}}", self.variables[variable])
             
         if content.find("{{llm-sized-transcript}}") != -1:
-            shorter_transcript = self.get_shorter_transcript(transcript, self.generator)
+            shorter_transcript = self.get_shorter_transcript(transcript)
             content = content.replace("{{llm-sized-transcript}}", shorter_transcript)
             
         if content.find("{{transcript-without-sponsorship}}") != -1:
-            cleaned_transcript = self.get_transcript_without_sponsorship(transcript, self.generator)
+            cleaned_transcript = self.get_transcript_without_sponsorship(transcript)
             content = content.replace("{{transcript-without-sponsorship}}", cleaned_transcript)
         
         
@@ -113,13 +113,13 @@ class Parser:
 
 # --------------- Chunking and Summarization ---------------
 
-    def get_shorter_transcript(self, transcript):
-        if self.short_transcript[transcript] is None:
+    def get_shorter_transcript(self, transcript: str) -> str:
+        if self.short_transcript.get(transcript) is None:
             self.short_transcript[transcript] = self.generate_shorter_transcript(transcript)
             
-        return self.short_transcript
+        return self.short_transcript.get(transcript)
 
-    def generate_shorter_transcript(self, transcript):
+    def generate_shorter_transcript(self, transcript: str) -> str:
         margin = 1000  # Margin to account for additional tokens in the final summary
         
         model_max_tokens = self.generator.get_model_max_tokens()
@@ -206,10 +206,10 @@ class Parser:
             user_prompt = self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)
         )
         
-    def get_transcript_without_sponsorship(self, transcript_text: str) -> str:
-        if self.clened_transcript[transcript_text] is None:
-            self.clened_transcript[transcript_text] = self.generate_transcript_without_sponsorship(transcript_text)
-        return self.clened_transcript[transcript_text]
+    def get_transcript_without_sponsorship(self, transcript: str) -> str:
+        if self.clened_transcript.get(transcript) is None:
+            self.clened_transcript[transcript] = self.generate_transcript_without_sponsorship(transcript)
+        return self.clened_transcript.get(transcript)
 
     def generate_transcript_without_sponsorship(self, transcript_text: str) -> str:
         model_max_tokens = self.generator.get_model_max_tokens()

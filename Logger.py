@@ -11,6 +11,6 @@ class Logger:
 
     def save_log(self, entry):
         log_line = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} :\n"+ \
-                    f"```\n{entry}\n```"
+                    f"```\n{entry}\n```\n\n"
         with open(self.log_path, "a") as f:
             f.write(log_line)

@@ -112,6 +112,7 @@ def create_markdown_file(md_content, file_name, folder_path):
 
   info += f"Markdown file saved at {new_filepath}"
   logger.save_log(info)
+  print(f"Markdown file saved at {new_filepath}")
 
 
 def prepare_content_from_template(template_path):

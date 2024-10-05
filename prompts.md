@@ -141,7 +141,7 @@ Here is all the metadata of the video :
 - title: {{video_title}}
 
 Here is the transcript of the video :
-{{cleaned_transcript}}
+{{llm-sized-transcript}}
 ```
 
 
@@ -157,7 +157,7 @@ Here is all the metadata of the video :
 - title: {{video_title}}
 
 Here is the transcript of the video :
-{{cleaned_transcript}}
+{{llm-sized-transcript}}
 
 
 You will generate increasingly concise, entity-dense summaries of the above video.

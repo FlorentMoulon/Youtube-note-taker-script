@@ -19,12 +19,6 @@ class App:
     save_path = self.path_entry.get()
     template_path = self.template_path_entry.get()
     
-    # Print the URL and path to the console (for now)
-    print("URL :", video_url)
-    print("File name :", file_name)
-    print("Save path :", save_path)
-    print("Template path :", template_path)
-    
     # Save fields to a file
     self.save_fields()
 

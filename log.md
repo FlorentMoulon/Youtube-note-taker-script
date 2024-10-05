@@ -1,53 +1,53 @@
 
 ---
+2024-10-05 20:24:15 :
+```
+Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
+```
+
+2024-10-05 20:24:19 :
+```
+Markdown file saved at D:/4.Projet/Youtube-note-taker-script/out\test.md
+```
+
 
 ---
-2024-10-05 18:58:40 :
+2024-10-05 20:28:06 :
 ```
 Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
 ```
+
+
 ---
-2024-10-05 19:01:10 :
+2024-10-05 20:29:15 :
 ```
 Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
 ```
+
+
 ---
-2024-10-05 19:01:50 :
+2024-10-05 20:32:14 :
 ```
 Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
 ```
+
+
 ---
-2024-10-05 19:02:16 :
+2024-10-05 20:34:21 :
 ```
 Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
 ```
+
+
 ---
-2024-10-05 19:03:40 :
+2024-10-05 20:35:06 :
 ```
 Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
 ```
----
-2024-10-05 19:04:59 :
-```
-Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
-```
----
-2024-10-05 19:06:10 :
-```
-Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
-```
----
-2024-10-05 19:08:25 :
-```
-Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
-```
----
-2024-10-05 19:10:53 :
-```
-Generating notes for video: https://www.youtube.com/watch?v=wROFZ0JO0Hk with file name: test and template: D:/4.Projet/Youtube-note-taker-script/template.md
-```2024-10-05 19:10:57 :
+
+2024-10-05 20:35:12 :
 ```
 File D:/4.Projet/Youtube-note-taker-script/out\test.md already exists. Trying a new name...
-File D:/4.Projet/Youtube-note-taker-script/out\test-1.md already exists. Trying a new name...
-Markdown file saved at D:/4.Projet/Youtube-note-taker-script/out\test-2.md
+Markdown file saved at D:/4.Projet/Youtube-note-taker-script/out\test-1.md
 ```
+
