@@ -192,7 +192,7 @@ class Parser:
     def summarize_chunk(self, chunk: str, expected_size: int, generator=Generator()) -> str:
         return generator.generate_chat_completion(
             system_prompt = "",
-            user_prompt = self.prompts["SUMMARIZE_CHUNK"].replace("{{chunk}}", chunk).replace("{{expected_size}}", expected_size)
+            user_prompt = self.prompts["SUMMARIZE_CHUNK"].replace("{{chunk}}", chunk).replace("{{expected_size}}", str(expected_size))
         )
 
 
