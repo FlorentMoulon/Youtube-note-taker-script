@@ -139,7 +139,7 @@ class Parser:
         # Summarize each chunk
         summarize_chunk_size = (model_max_tokens - margin) // len(chunks)
         summarize_chunk_size_inword = math.floor(summarize_chunk_size // 1.5)
-        summaries = [self.summarize_chunk(self.remove_sponsorship(chunk), summarize_chunk_size_inword) for chunk in chunks]
+        summaries = [self.summarize_chunk(self.generate_transcript_without_sponsorship(chunk), summarize_chunk_size_inword) for chunk in chunks]
         
         # Combine summaries
         combined_summary = " ".join(summaries)
@@ -201,6 +201,11 @@ class Parser:
 
 
     def remove_sponsorship(self, text: str) -> str:
+        # a= self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)
+        # print("/////")
+        # print(len(a))
+        # print(self.generator.estimate_token_count(a))
+        # print("/////")
         return self.generator.generate_chat_completion(
             system_prompt = "",
             user_prompt = self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)
@@ -212,16 +217,26 @@ class Parser:
         return self.clened_transcript.get(transcript)
 
     def generate_transcript_without_sponsorship(self, transcript_text: str) -> str:
+        margin = 200
         model_max_tokens = self.generator.get_model_max_tokens()
         estimated_tokens = self.generator.estimate_token_count(transcript_text)
         
         if estimated_tokens >= model_max_tokens//2:  
             # Calculate the chunk size and overlap (in token)
-            chunk_size = model_max_tokens//2
+            chunk_size = model_max_tokens//2 - margin
             chunk_size_in_word = math.floor(chunk_size // 1.5)
+            
+            # print("---")
+            # print(chunk_size)
+            # print(chunk_size_in_word)
+            # print("---")
 
             # Create chunks
             chunks = self.create_chunks_with_overlap(transcript_text, chunk_size_in_word, 0)
+            # for chunk in chunks:
+            #     print(len(chunk))
+            #     print(self.generator.estimate_token_count(chunk))
+            #     print("---")
             
             # Remove sponsorship from each chunk
             cleaned_chunks = [self.remove_sponsorship(chunk) for chunk in chunks]
