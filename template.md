@@ -4,7 +4,7 @@ You can use these variable inside the template, the script will replace them by 
 - {{date}} *today*
 - {{file_name}} *of the .md document*
 - {{publication_date}}
-- {{duration}}
+- {{video_duration}}
 - {{channel}}
 - {{video_description}}
 - {{video_tags}}

@@ -5,13 +5,19 @@ from datetime import datetime
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound
 from youtube_transcript_api.formatters import TextFormatter
 from bs4 import BeautifulSoup
-from groq import Groq
+from groq import Groq, BadRequestError
 from dotenv import load_dotenv
+import sys
+import math as Math
+
+# Reconfigurer la sortie standard pour utiliser l'encodage 'utf-8'
+sys.stdout.reconfigure(encoding='utf-8')
 
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MODEL = "llama3-8b-8192"
+#MODEL = "mixtral-8x7b-32768"
 
 
 def generate_note_file(youtube_url, file_name, folder_path, template_path="./template.md"):
@@ -68,10 +74,10 @@ def get_transcript(video_url):
 
     # Try to find a transcript in the preferred languages ('fr' or 'en')
     try:
-      transcript = transcript_list.find_transcript(['fr', 'en'])
+      transcript = transcript_list.find_transcript(['fr', 'en', 'en-GB', 'en-US', 'it'])
     except NoTranscriptFound:
       # If not found, use any available transcript
-      transcript = transcript_list.find_generated_transcript(['fr', 'en', 'it'])
+      transcript = transcript_list.find_generated_transcript(['fr', 'en', 'en-GB', 'en-US', 'it'])
 
     # Format transcript to plain text
     formatter = TextFormatter()
@@ -146,7 +152,7 @@ def replace_completion(content, completions):
 
 # ---------------------- LLM Part ---------------------- 
 
-def parse_prompt(video_details, file_name, transcript, prompt_path):
+def parse_prompt(prompt_path):
   content = ""
   
   # load template
@@ -157,8 +163,6 @@ def parse_prompt(video_details, file_name, transcript, prompt_path):
   content = "---".join(content.split("---")[1:])
   content = "---" + content
   
-  content = replace_variable(content, video_details, file_name, transcript)
-  
   content = content.split("```")
   content = [content[i] for i in range(1, len(content), 2)]
 
@@ -166,9 +170,15 @@ def parse_prompt(video_details, file_name, transcript, prompt_path):
   
   return prompts
 
-def generate_notes(video_details, file_name, transcript_text, prompt_path="D:/4.Projet/Youtube-note-taker-script/prompts.md"):
-  prompts = parse_prompt(video_details, file_name, transcript_text, prompt_path)
+def generate_notes(video_details, file_name, transcript_text, prompt_path="D:/4.Projet/Youtube-note-taker-script/prompts.md", model=MODEL):
+  prompts = parse_prompt(prompt_path)
   completions = {}
+  
+  transcript = generate_shorter_transcript(transcript_text, model)
+  
+  # for i in range(len(prompts)):
+  #   print(prompts[i])
+  #   print("\n")
 
   for i in range(len(prompts)):
     prompt = prompts[i].get('prompt')
@@ -176,9 +186,15 @@ def generate_notes(video_details, file_name, transcript_text, prompt_path="D:/4.
     for prompt_name in completions:
       prompt = prompt.replace("{{"+prompt_name+"}}", completions[prompt_name])
     
+    prompt = replace_variable(prompt, video_details, file_name, transcript)
+    
+    print("\n-----------------------------------\n")
+    print("Prompt:", prompt)
+    
     completion = generate_chat_completion(
       system_prompt = "Generate notes based on the video transcript.",
-      user_prompt = prompt
+      user_prompt = prompt,
+      model = model
     )
     
     completions[prompts[i].get('name')] = completion
@@ -187,9 +203,9 @@ def generate_notes(video_details, file_name, transcript_text, prompt_path="D:/4.
 
 
 # Function to generate text using Groq API
-def generate_chat_completion(system_prompt, user_prompt, model=MODEL):
-  client = Groq(api_key=GROQ_API_KEY)
-    
+def generate_chat_completion(system_prompt, user_prompt, model=MODEL, api_key=GROQ_API_KEY):
+  client = Groq(api_key=api_key)
+
   chat_completion = client.chat.completions.create(
     messages = [
       {
@@ -207,3 +223,113 @@ def generate_chat_completion(system_prompt, user_prompt, model=MODEL):
   )
 
   return chat_completion.choices[0].message.content
+
+
+
+# --------------- Chunking and Summarization ---------------
+
+
+def estimate_token_count(prompt, model=MODEL, api_key=GROQ_API_KEY):
+  return len(prompt)/3.8   # Rough estimate: 1 token ≈ 3.8 characters
+
+def get_model_max_tokens(model):
+  return {
+    "mixtral-8x7b-32768": 32768,
+    "llama2-70b-4096": 4096,
+    "llama3-8b-8192": 8192,
+    # Add other models and their token limits here
+  }.get(model, 4096)  # Default
+
+
+def create_chunks_with_overlap(text: str, chunk_size_in_word: int, overlap: int):
+  words = text.split()
+  chunks = []
+  start = 0
+  while start < len(words) - overlap:
+    end = start + chunk_size_in_word
+    chunk = ' '.join(words[start:end])
+    chunks.append(chunk)
+    start += chunk_size_in_word - overlap
+  return chunks
+
+def summarize_chunk(chunk: str, expected_size: int, model: str) -> str:
+  return generate_chat_completion(
+    system_prompt="",
+    user_prompt=f"Summarize the following text in it's own language (if the text is in english, write in english, if it's in french, write in french ...) in less than {expected_size} words : {chunk}",
+    model=model
+  )
+
+def generate_shorter_transcript(transcript_text: str, model: str) -> str:
+  margin = 1000  # Margin to account for additional tokens in the final summary
+  
+  #model_max_tokens = get_model_max_tokens(model)
+
+  model_max_tokens = 4000
+  
+  
+  
+  estimated_tokens = estimate_token_count(transcript_text)
+  
+  if estimated_tokens <= model_max_tokens - margin:
+    return transcript_text
+  
+  
+  # Calculate the chunk size and overlap (in token)
+  chunk_size = model_max_tokens - margin
+  chunk_size_in_word = Math.floor(chunk_size // 1.5)
+  overlap = Math.floor(chunk_size_in_word // 4)
+  
+
+  
+  print("Estimated tokens:", estimated_tokens)
+  print("Model max tokens:", model_max_tokens)
+  print("Chunk size in token:", chunk_size)
+  print("Chunk size in word:", chunk_size_in_word)
+  print("Overlap:", overlap)
+  
+
+  # Create chunks with overlap
+  chunks = create_chunks_with_overlap(transcript_text, chunk_size_in_word, overlap)
+  
+  print("---CHUNKS------------------")
+  print("")
+  print("Number of chunks:", len(chunks))
+  for chunk in chunks:
+    print("Chunk length:", len(chunk))
+    print("Estimated tokens:", estimate_token_count(chunk))
+    print(chunk)
+    print("----------")
+    print("")
+    
+    
+  # Summarize each chunk
+  summarize_chunk_size = (model_max_tokens - margin) // len(chunks)
+  summarize_chunk_size_inword = Math.floor(summarize_chunk_size // 1.5)
+  summaries = [summarize_chunk(chunk, summarize_chunk_size_inword, model) for chunk in chunks]
+  print("--SUMMARIES-------------------")
+  print("")
+  for summary in summaries:
+    print("Summary length:", len(summary))
+    print("Estimated tokens:", estimate_token_count(summary))
+    print(summary)
+    print("----------")
+    print("")
+  
+  
+  # Combine summaries
+  combined_summary = " ".join(summaries)
+  
+  print("--FINAL-------------------")
+  print("")
+  print("Combined summary length:", len(combined_summary))
+  print("Estimated tokens:", estimate_token_count(combined_summary))
+  print(combined_summary)
+  
+  return combined_summary
+  
+  # If the combined summary is still too long, recursively summarize
+  # if estimate_token_count(combined_summary) > model_max_tokens - margin:
+  #   print("\n\nRecursively summarizing...\n\n")
+  #   return generate_shorter_transcript(combined_summary, model)
+  # else:
+  #   return combined_summary
