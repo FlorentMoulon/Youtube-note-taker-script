@@ -18,45 +18,6 @@ All the prompt are run in the order in which they appear in this file
 
 
 
-
-```prompt_detailed_note
-Writte in french.
-Take note about the video like you are a degree student assiting to a lecture using markdown syntax. The note should be consice but should not miss any revelant information.
-Here is all the metadata of the video :
-- publication_date: {{publication_date}}
-- duration: {{duration}}
-- channel: {{channel}}
-- video_description :{{video_description}}
-- tags: {{video_tags}}
-- title: {{video_title}}
-
-Here is the transcript of the video :
-{{transcript}}
-```
-
-```prompt_summary
-Writte in french.
-Summarize this video in 2 to 3 senteces (this summary should be as usefull as possible to find the note when we look for a information that is inside).
-
-Here is all the metadata of the video :
-- publication_date: {{publication_date}}
-- duration: {{duration}}
-- channel: {{channel}}
-- video_description :{{video_description}}
-- tags: {{video_tags}}
-- title: {{video_title}}
-
-And here is a detailed description of the video :
-{{prompt_detailed_note}}
-```
-
-
-```
-Second thing to remove : LLM footprint
-A LLM footprint is a small sentece that break the text to say something like "Here is a summary of the text in English, under 1000 words:" or "for sure, here is your summary".
-They are small and unrealated to the context around them.
-```
-
 > variable: value
 ---
 

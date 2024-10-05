@@ -22,7 +22,6 @@ tags:
 date: {{date}}
 video_title: {{video_title}}
 video_url: {{video_url}}
-video_tag: [{{video_tags}}]
 video_duration: {{video_duration}}
 video_publication Date: {{publication_date}}
 channel: {{channel}}
