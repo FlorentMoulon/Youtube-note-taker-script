@@ -60,9 +60,6 @@ They are small and unrealated to the context around them.
 > variable: value
 ---
 
->testval: Topitop---------- --- 8
-
-
 
 ```SUMMARIZE_CHUNK
 Vous êtes un expert en résumé de texte, capable de condenser l'information tout en préservant les points clés et le contexte.
@@ -132,29 +129,15 @@ Writte in french.
 Take note about the video like you are a degree student assiting to a lecture using markdown syntax. The note should be consice but should not miss any revelant information.
 Do not talk about the sponsored part of the video if there is one.
 
-Here is all the metadata of the video :
-- publication_date: {{publication_date}}
-- duration: {{duration}}
-- channel: {{channel}}
-- video_description :{{video_description}}
-- tags: {{video_tags}}
-- title: {{video_title}}
-
 Here is the transcript of the video :
 {{llm-sized-transcript}}
 ```
 
 
+> nb_word_for_summary: 300
+
 ```prompt_summary
 Writte in french.
-Video: 
-Here is all the metadata of the video :
-- publication_date: {{publication_date}}
-- duration: {{video_duration}}
-- channel: {{channel}}
-- video_description :{{video_description}}
-- tags: {{video_tags}}
-- title: {{video_title}}
 
 Here is the transcript of the video :
 {{llm-sized-transcript}}
@@ -175,7 +158,7 @@ A missing entity is:
 
 
 Guidelines:
-- The first summary should be long (4-5 sentences, ~200 words) yet highly non-specific, containing little information beyond the entities marked as missing. Use overly verbose language and fillers (e.g., "this video discusses") to reach ~200 words.
+- The first summary should be long (4-5 sentences, ~{{nb_word_for_summary}} words) yet highly non-specific, containing little information beyond the entities marked as missing. Use overly verbose language and fillers (e.g., "this video discusses") to reach ~{{nb_word_for_summary}} words.
 - Make every word count: rewrite the previous summary to improve flow and make space for additional entities.
 - Make space with fusion, compression, and removal of uninformative phrases like "the video discusses".
 - The summaries should become highly dense and concise yet self-contained, i.e., easily understood without the video.

@@ -53,13 +53,13 @@ class Parser:
         for prompt in self.prompts:
             if content.find("{{"+prompt+"}}") != -1:
                 # parse prompt
-                prompt = self.prompts[prompt]
-                prompt = self.replace_variable(prompt, video_details, file_name, transcript)
-                
+                prompt_text = self.prompts[prompt]
+                prompt_text = self.replace_variable(prompt_text, video_details, file_name, transcript)
+
                 # generate completion
                 completion = self.generator.generate_chat_completion(
                     system_prompt = "",
-                    user_prompt = prompt,
+                    user_prompt = prompt_text,
                     name = prompt
                 )
                 content = content.replace("{{"+prompt+"}}", completion)

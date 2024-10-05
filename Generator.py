@@ -2,11 +2,14 @@ from groq import Groq, BadRequestError
 from dotenv import load_dotenv
 import os
 
+from Logger import Logger
+
 DEFAULT_MODEL = "llama3-8b-8192"
 
 class Generator:
     def __init__(self):
         load_dotenv()
+        self.logger = Logger()
         self.api_key = os.getenv("GROQ_API_KEY")
         self.client = Groq(api_key=self.api_key)
         self.model = DEFAULT_MODEL
@@ -38,6 +41,8 @@ class Generator:
             model=self.model,
             temperature=0.5,
         )
+        
+        self.logger.save_log(f"Prompt:\n {user_prompt} \n\n Completion:\n {chat_completion.choices[0].message.content}")
 
         return chat_completion.choices[0].message.content
     

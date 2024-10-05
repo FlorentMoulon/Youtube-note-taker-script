@@ -27,7 +27,6 @@ video_duration: {{video_duration}}
 video_publication Date: {{publication_date}}
 channel: {{channel}}
 ---
-{{testval}}
 
 
 # Description
