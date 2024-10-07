@@ -50,7 +50,7 @@ class App:
     # Open a file dialog to select a file
     file_path = filedialog.askopenfilename(
       title="Select Prompts File",
-      filetypes=(("Text files", "*.md"), ("All files", "*.*")) #avoir .md et .txt par défaut
+      filetypes=(("Text files", "*.md *.txt"), ("All files", "*.*"))
     )
     if file_path:
       self.prompts_path_entry.delete(0, tk.END)
@@ -118,7 +118,7 @@ class App:
     select_template_button.pack(side=tk.LEFT)
     
     # Entry for the Prompts Path
-    prompts_path_label = Label(self.root, text="Template path :")
+    prompts_path_label = Label(self.root, text="Prompts path :")
     prompts_path_label.pack(pady=5)
     prompts_path_frame = tk.Frame(self.root)
     prompts_path_frame.pack(pady=5)
