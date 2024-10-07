@@ -8,7 +8,7 @@ from functions import *
 
 class App:
     def __init__(self):
-        self.config_file = "saved_fields.json"  # Path to the config file
+        self.config_file = "./files/saved_fields.json"  # Path to the config file
         self.init_window()
         self.load_fields()
 

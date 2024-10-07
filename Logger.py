@@ -2,7 +2,7 @@ import datetime
 
 
 class Logger:
-    def __init__(self, log_path="./log.md"):
+    def __init__(self, log_path="./files/log.md"):
         self.log_path = log_path
     
     def landmark_log(self):
