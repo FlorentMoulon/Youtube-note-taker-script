@@ -6,11 +6,13 @@ import os
 
 from functions import *
 
+
 class App:
     def __init__(self):
-        self.config_file = "./files/saved_fields.json"  # Path to the config file
+        self.create_save_file()
         self.init_window()
         self.load_fields()
+        
 
     def on_create_button_click(self):
         video_url = self.url_entry.get()
@@ -55,6 +57,24 @@ class App:
         if value not in values:
             values.insert(0, value)
             combo['values'] = values[:10]  # Keep only the 10 most recent entries
+
+    def create_save_file(self):
+        # Get the directory of the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Define the path to the 'files' folder
+        files_folder = os.path.join(script_dir, 'files')
+        
+        # Check if the 'files' folder exists, create it if it doesn't
+        if not os.path.exists(files_folder):
+            try:
+                os.makedirs(files_folder)
+            except OSError as e:
+                print(f"Error creating 'files' folder: {e}")
+        
+        # Construct the path to saved_fields.json
+        self.config_file = os.path.join(files_folder, 'saved_fields.json')
+        return self.config_file
 
     def save_fields(self):
         field_data = {
