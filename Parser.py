@@ -2,7 +2,7 @@ import datetime
 import math
 from Generator import Generator
 from Logger import Logger
-
+from Scrapper import Scrapper
 
 def get_file_content(path):
     with open(path, 'r') as file:
@@ -10,9 +10,10 @@ def get_file_content(path):
 
 
 class Parser:
-    def __init__(self, prompt_path="D:/4.Projet/Youtube-note-taker-script/prompts.md", generator=Generator(), logger=Logger()):
+    def __init__(self, prompt_path, scrapper, generator=Generator(), logger=Logger()):
         self.generator = generator
         self.logger = logger
+        self.scrapper = scrapper
         self.prompts = {}
         self.variables = {}
         self.short_transcript = {}
@@ -25,36 +26,45 @@ class Parser:
     def get_prompt(self, name):
         return self.prompts.get(name)
 
-    def replace_variable(self, content, video_details, file_name, transcript):
+    def replace_variable(self, content, file_name):
         content = content.replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
         content = content.replace("{{file_name}}", file_name)
-        content = content.replace("{{transcript}}", transcript)
         
+        video_details = self.scrapper.get_video_details()
         content = content.replace("{{publication_date}}", video_details.get('publication_date'))
         content = content.replace("{{video_duration}}", video_details.get('video_duration'))
         content = content.replace("{{channel}}", video_details.get('channel'))
-        content = content.replace("{{video_description}}", video_details.get('video_description'))
         content = content.replace("{{video_tags}}", video_details.get('video_tags'))
         content = content.replace("{{video_title}}", video_details.get('title'))
         content = content.replace("{{video_url}}", video_details.get('url'))
         
+        content = content.replace("{{video_description}}", self.scrapper.get_video_description())
+        
         for variable in self.variables:
             content = content.replace("{{"+variable+"}}", self.variables[variable])
             
+        if content.find("{{transcript}}") != -1:
+            content = content.replace("{{transcript}}", self.scrapper.get_transcript())
+            
+        if content.find("{{transcript_with_timecode}}") != -1:
+            content = content.replace("{{transcript_with_timecode}}", self.scrapper.get_transcript(with_timecode=True))
+            
         if content.find("{{llm-sized-transcript}}") != -1:
-            shorter_transcript = self.get_shorter_transcript(transcript)
+            shorter_transcript = self.get_shorter_transcript(self.scrapper.get_transcript())
             content = content.replace("{{llm-sized-transcript}}", shorter_transcript)
             
         if content.find("{{transcript-without-sponsorship}}") != -1:
-            cleaned_transcript = self.get_transcript_without_sponsorship(transcript)
+            cleaned_transcript = self.get_transcript_without_sponsorship(self.scrapper.get_transcript())
             content = content.replace("{{transcript-without-sponsorship}}", cleaned_transcript)
+            
+
         
         
         for prompt in self.prompts:
             if content.find("{{"+prompt+"}}") != -1:
                 # parse prompt
                 prompt_text = self.prompts[prompt]
-                prompt_text = self.replace_variable(prompt_text, video_details, file_name, transcript)
+                prompt_text = self.replace_variable(prompt_text, file_name)
 
                 # generate completion
                 completion = self.generator.generate_chat_completion(

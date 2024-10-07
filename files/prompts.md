@@ -85,20 +85,57 @@ Process the following text according to these instructions:
 ```
 
 
-```prompt_detailed_note
-Writte in french.
-Take note about the video like you are a degree student assiting to a lecture using markdown syntax. The note should be consice but should not miss any revelant information.
-Do not talk about the sponsored part of the video if there is one.
+> language: french
+> min_nb_word_for_note: 700
+> max_nb_word_for_note: 1000
+> percentage_for_conclusion: 20
 
-Here is the transcript of the video :
+
+```prompt_detailed_note
+Writte in {{language}}.
+
+You are a highly skilled note-taker with the ability to distill complex information into clear, structured notes. Your task is to create comprehensive notes from a YouTube video transcript, following these guidelines:
+
+Structure:
+Begin with a brief introduction or overview of the video's main topic.
+Follow the structure of the video, organizing information into main sections and subsections as presented.
+Use appropriate Markdown syntax for headings, subheadings, lists, and emphasis.
+
+Content:
+Capture all key points, important details, and relevant examples.
+Omit any sponsored content or unrelated tangents.
+Include important definitions, statistics, or data mentioned.
+Note any significant quotes, attributing them properly.
+
+Formatting:
+Use bullet points or numbered lists for easier readability where appropriate.
+Employ bold or italic text to highlight crucial information.
+If diagrams or charts are described, represent them textually or with ASCII art if possible.
+
+Length and Depth:
+Aim for notes that would fill approximately one standard document page (about {{min_nb_word_for_note}}-{{max_nb_word_for_note}} words).
+Prioritize depth over breadth, focusing on the most important concepts.
+
+Conclusion:
+If the video has an explicit conclusion, dedicate a substantial section to it (about {{percentage_for_conclusion}}% of the notes).
+Summarize the main takeaways and any call to action or future implications mentioned.
+
+Final Touch:
+At the end, include a brief "Key Takeaways" section with 3-5 bullet points summarizing the most crucial points.
+
+
+Remember to maintain a neutral, academic tone throughout the notes. Focus on accuracy and clarity in conveying the video's content.
+
+Create notes based on the following video transcript:
 {{llm-sized-transcript}}
 ```
+
 
 
 > nb_word_for_summary: 300
 
 ```prompt_summary
-Writte in french.
+Writte in {{language}}.
 
 Here is the transcript of the video :
 {{llm-sized-transcript}}
@@ -129,5 +166,53 @@ Guidelines:
 Remember, use the exact same number of words for each summary.
 Repeat the 2 steps 5 times now.
 
-Answer in JSON. The JSON should be a list (length5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary" .
+Output Format:
+Do not include any explanations, note or additional text before or after the keyword list.
+Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary" .
+```
+
+
+> min_nb_keyword: 5
+> max_nb_keyword: 10
+
+```keyword_extraction
+You are an expert in content analysis and keyword extraction. Your task is to extract the most relevant and important keywords from the given text. Follow these instructions carefully:
+
+Input: 
+You will receive a text passage.
+
+Analysis:
+Read and analyze the entire text thoroughly.
+Identify the main topics, themes, and key concepts discussed.
+
+Keyword Extraction:
+Extract {{min_nb_keyword}}-{{max_nb_keyword}} keywords or key phrases that best represent the core content of the text.
+Focus on nouns, noun phrases, and occasionally important verbs or adjectives.
+Prioritize words or phrases that:
+- Would be useful for categorizing or searching for this content
+- Appear frequently (accounting for variations and synonyms)
+- Are central to the main ideas or arguments
+
+Output Format:
+Present the keywords in a bulleted list.
+Use lowercase for all keywords unless they are proper nouns.
+Arrange the keywords in order of importance or relevance to the overall text.
+Do not include any explanations, note or additional text before or after the keyword list.
+
+Additional Guidelines:
+- If the text is specialized or technical, include relevant technical terms.
+- For longer texts, ensure the keywords cover the breadth of topics discussed.
+- Avoid overly general terms unless they are crucially important to the text's theme.
+- Maintain the original language of the text.
+
+Output Structure:
+Your response should follow this exact structure:
+Keywords:
+- [keyword 1]
+- [keyword 2]
+- [keyword 3]
+...
+
+Extract keywords from the following text according to these instructions:
+{{llm-sized-transcript}}
 ```

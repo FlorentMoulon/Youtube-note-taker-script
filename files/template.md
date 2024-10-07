@@ -27,6 +27,9 @@ video_publication Date: {{publication_date}}
 channel: {{channel}}
 ---
 
+# Keyword
+{{keyword_extraction}}
+
 
 # Description
 {{prompt_summary}}
