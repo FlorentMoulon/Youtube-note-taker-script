@@ -15,7 +15,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 # Create a generator instance who allow to call the LLM
 generator = Generator()
-logger = Logger()
+logger = Logger(True)
 
 
 def generate_note_file(youtube_url, file_name, folder_path, template_path="./template.md", prompt_path="D:/4.Projet/Youtube-note-taker-script/prompts.md"):
