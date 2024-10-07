@@ -190,6 +190,7 @@ class Scrapper:
         self.video_details = None
         self.transcript = {}
         self.video_description = None
+        self.chapters = None
         
     def get_video_details(self):
         if not self.video_details:
@@ -208,3 +209,12 @@ class Scrapper:
             self.transcript[with_chapter, with_timestamps] = get_transcript(self.youtube_url, with_chapter, with_timestamps)
             
         return self.transcript[with_chapter, with_timestamps]
+    
+    def get_chapters(self):
+        if not self.chapters:
+            self.chapters = get_video_chapters(self.youtube_url)
+        return self.chapters
+    
+    def get_chapters_text(self):
+        chapters = self.get_chapters()
+        return [f"{chapter['time']} {chapter['title']}" for chapter in chapters] 
