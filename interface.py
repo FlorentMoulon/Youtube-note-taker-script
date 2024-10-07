@@ -18,12 +18,13 @@ class App:
     file_name = self.file_name_entry.get()
     save_path = self.path_entry.get()
     template_path = self.template_path_entry.get()
+    prompts_path = self.prompts_path_entry.get()
     
     # Save fields to a file
     self.save_fields()
 
     # Call the generate_note_file function
-    generate_note_file(video_url, file_name, save_path, template_path)
+    generate_note_file(video_url, file_name, save_path, template_path, prompts_path)
 
 
   # Function to open file dialog and select folder
@@ -39,18 +40,29 @@ class App:
     # Open a file dialog to select a file
     file_path = filedialog.askopenfilename(
       title="Select Template File",
-      filetypes=(("Text files", "*.txt"), ("All files", "*.*"))
+      filetypes=(("Text files", "*.md"), ("All files", "*.*"))
     )
     if file_path:
       self.template_path_entry.delete(0, tk.END)
       self.template_path_entry.insert(0, file_path)
+  
+  def select_prompts_file(self):
+    # Open a file dialog to select a file
+    file_path = filedialog.askopenfilename(
+      title="Select Prompts File",
+      filetypes=(("Text files", "*.md"), ("All files", "*.*")) #avoir .md et .txt par défaut
+    )
+    if file_path:
+      self.prompts_path_entry.delete(0, tk.END)
+      self.prompts_path_entry.insert(0, file_path)
 
   def save_fields(self):
     field_data = {
       "video_url": self.url_entry.get(),
       "file_name": self.file_name_entry.get(),
       "save_path": self.path_entry.get(),
-      "template_path": self.template_path_entry.get()
+      "template_path": self.template_path_entry.get(),
+      "prompts_path:": self.prompts_path_entry.get()
     }
     with open(self.config_file, 'w') as f:
       json.dump(field_data, f)
@@ -63,11 +75,12 @@ class App:
       self.file_name_entry.insert(0, field_data.get("file_name", ""))
       self.path_entry.insert(0, field_data.get("save_path", ""))
       self.template_path_entry.insert(0, field_data.get("template_path", ""))
+      self.prompts_path_entry.insert(0, field_data.get("prompts_path", ""))
 
   def init_window(self):
     self.root = tk.Tk()
     self.root.title("YouTube URL to Markdown")
-    self.root.geometry("400x350")
+    self.root.geometry("400x400") # Taille auto pour la fenetre ?
 
     # Entry for the URL
     url_label = Label(self.root, text="Video url :")
@@ -103,6 +116,16 @@ class App:
     self.template_path_entry.pack(side=tk.LEFT)
     select_template_button = Button(template_path_frame, text="Browse...", command=self.select_template_file)
     select_template_button.pack(side=tk.LEFT)
+    
+    # Entry for the Prompts Path
+    prompts_path_label = Label(self.root, text="Template path :")
+    prompts_path_label.pack(pady=5)
+    prompts_path_frame = tk.Frame(self.root)
+    prompts_path_frame.pack(pady=5)
+    self.prompts_path_entry = Entry(prompts_path_frame, width=38)
+    self.prompts_path_entry.pack(side=tk.LEFT)
+    select_prompts_button = Button(prompts_path_frame, text="Browse...", command=self.select_prompts_file)
+    select_prompts_button.pack(side=tk.LEFT)
 
     # Create button
     create_button = Button(self.root, text="Create", command=self.on_create_button_click)

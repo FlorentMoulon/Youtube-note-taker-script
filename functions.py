@@ -10,11 +10,11 @@ from Logger import Logger
 from Parser import Parser
 from Generator import Generator
 
-# use 'utf-8'
+# use 'utf-8' for printing to console
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Create a generator instance who allow to call the LLM
-gen = Generator()
+generator = Generator()
 logger = Logger()
 
 
@@ -29,7 +29,7 @@ def generate_note_file(youtube_url, file_name, folder_path, template_path="./tem
   transcript = get_transcript(youtube_url)
 
   # Generate notes
-  parser = Parser()
+  parser = Parser(prompt_path, generator, logger)
   md_content = parser.replace_variable(prepare_content_from_template(template_path), video_details, file_name, transcript)
   
   # Save notes to file
@@ -107,7 +107,7 @@ def create_markdown_file(md_content, file_name, folder_path):
     counter += 1
   
   # Save to .md file with a unique name
-  with open(new_filepath, 'w') as f:
+  with open(new_filepath, 'w', encoding="utf-8") as f:
     f.write(md_content)
 
   info += f"Markdown file saved at {new_filepath}"
