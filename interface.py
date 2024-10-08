@@ -112,29 +112,7 @@ class App:
         padding_y = 5
         padding_x = 25
         app_width = 75
-
-        # URL Entry
-        url_label = Label(self.main_frame, text="Video url:")
-        url_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
-        self.url_entry = Entry(self.main_frame, width=app_width)
-        self.url_entry.pack(pady=(0, padding_y), padx=padding_x, fill='x')
-        self.url_entry.bind('<FocusOut>', self.on_url_change)
-
-        # File Name Entry
-        file_name_label = Label(self.main_frame, text="Note name:")
-        file_name_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
-        self.file_name_entry = Entry(self.main_frame)
-        self.file_name_entry.pack(pady=(0, padding_y), padx=padding_x, fill='x')
-
-        # Saving Path Combo
-        path_label = Label(self.main_frame, text="Folder path:")
-        path_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
-        path_frame = tk.Frame(self.main_frame)
-        path_frame.pack(pady=(0, padding_y), padx=padding_x, fill='x')
-        self.path_combo = Combobox(path_frame)
-        self.path_combo.pack(side=tk.LEFT, expand=True, fill='x')
-        select_button = Button(path_frame, text="Browse...", command=self.select_folder)
-        select_button.pack(side=tk.RIGHT)
+        
         
         # Template Path Combo
         template_path_label = Label(self.main_frame, text="Template path:")
@@ -155,6 +133,30 @@ class App:
         self.prompts_path_combo.pack(side=tk.LEFT, expand=True, fill='x')
         select_prompts_button = Button(prompts_path_frame, text="Browse...", command=self.select_prompts_file)
         select_prompts_button.pack(side=tk.RIGHT)
+        
+        # Saving Path Combo
+        path_label = Label(self.main_frame, text="Folder path:")
+        path_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
+        path_frame = tk.Frame(self.main_frame)
+        path_frame.pack(pady=(0, padding_y), padx=padding_x, fill='x')
+        self.path_combo = Combobox(path_frame)
+        self.path_combo.pack(side=tk.LEFT, expand=True, fill='x')
+        select_button = Button(path_frame, text="Browse...", command=self.select_folder)
+        select_button.pack(side=tk.RIGHT)
+        
+
+        # URL Entry
+        url_label = Label(self.main_frame, text="Video url:")
+        url_label.pack(pady=(padding_y*10, 0), padx=padding_x, anchor='w')
+        self.url_entry = Entry(self.main_frame, width=app_width)
+        self.url_entry.pack(pady=(0, padding_y), padx=padding_x, fill='x')
+        self.url_entry.bind('<FocusOut>', self.on_url_change)
+
+        # File Name Entry
+        file_name_label = Label(self.main_frame, text="Note name:")
+        file_name_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
+        self.file_name_entry = Entry(self.main_frame)
+        self.file_name_entry.pack(pady=(0, padding_y), padx=padding_x, fill='x')
 
         # Chapter selection frame
         chapter_label = Label(self.main_frame, text="Select Chapters:")
@@ -251,7 +253,6 @@ class App:
 
     def save_fields(self):
         field_data = {
-            "file_name": self.file_name_entry.get(),
             "save_path": list(self.path_combo['values']),
             "template_path": list(self.template_path_combo['values']),
             "prompts_path": list(self.prompts_path_combo['values'])
@@ -263,7 +264,6 @@ class App:
         if os.path.exists(self.config_file):
             with open(self.config_file, 'r') as f:
                 field_data = json.load(f)
-            self.file_name_entry.insert(0, field_data.get("file_name", ""))
             self.path_combo['values'] = field_data.get("save_path", [])
             self.template_path_combo['values'] = field_data.get("template_path", [])
             self.prompts_path_combo['values'] = field_data.get("prompts_path", [])
