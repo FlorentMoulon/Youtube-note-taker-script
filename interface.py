@@ -251,6 +251,23 @@ class App:
         
         # Construct the path to saved_fields.json
         self.config_file = os.path.join(files_folder, 'saved_fields.json')
+        
+        # Check if config_file exists, create it if it doesn't
+        if not os.path.exists(self.config_file):
+            with open(self.config_file, 'w') as f:
+                json.dump({
+                    "save_path": [
+                        ""
+                    ],
+                    "template_path": [
+                        os.path.join(files_folder, 'template.md')
+                    ],
+                    "prompts_path": [
+                        os.path.join(files_folder, 'prompts.md')
+                    ]
+                }, f, indent=4)
+
+        
         return self.config_file
 
     def save_fields(self):
