@@ -1,24 +1,45 @@
-Everything before the 3 dashes will be ignored
+### Variables
+All {{variable_name}} will be replace by their value (if it exist)
 
-All the prompt are run in the order in which they appear in this file
-
+Here is a list of all the script variables :
 - {{date}} *today*
 - {{file_name}} *of the .md document*
 - {{publication_date}}
 - {{video_duration}}
 - {{channel}}
 - {{video_description}}
-- {{video_tags}}
+- {{video_tags}} *separated by ', '*
 - {{video_title}}
 - {{video_url}}
-- {{transcript}}
+- {{transcript}} *full transcript of the video*
+- {{transcript_with_timecode}} *full transcript of the video with the timecode*
+- {{llm_sized_transcript}} *a pre-summarized transcript (using SUMMARIZE_CHUNK prompt to reduce the size of chunk of the transcript)*
+- {{transcript_without_sponsorship}} *a llm_sized transcript where all the sponred part of the video are removed (using REMOVE_SPONSOR prompt)*
+
+You can create your own variables :
+> variable_name: value
 
 
-- {{transcript_with_timecode}}
+### Prompts
+All {{prompt_name}} will be replace by the output of the LLM for the prompt.
+Before sending a prompt to the LLM, every variable and prompt called inside will replace by their values. That mean you can chain your prompt. But you need to avoid circular depencies in your prompt (= infinite loop).
+
+You can create your own prompts :
+```prompt_name
+The content of the prompt.
+{{another_prompt_name}} : {{variable}}
+```
+
+The prompt named in CAPITAL are script prompt and can't be removed, but feel free to upgrade them.
+
+If a {{prompt}} is needed multiple time, it will be only completed once by the LLM and the value will be saved so every call of the same prompt will return the same value.
 
 
+### Customization
+Feel free to customize this template to feat your own needs.
 
-> variable: value
+
+### Everything before those 3 dashes will be ignored
 ---
 
 
@@ -127,7 +148,7 @@ At the end, include a brief "Key Takeaways" section with 3-5 bullet points summa
 Remember to maintain a neutral, academic tone throughout the notes. Focus on accuracy and clarity in conveying the video's content.
 
 Create notes based on the following video transcript:
-{{llm-sized-transcript}}
+{{llm_sized_transcript}}
 ```
 
 
@@ -138,7 +159,7 @@ Create notes based on the following video transcript:
 Writte in {{language}}.
 
 Here is the transcript of the video :
-{{llm-sized-transcript}}
+{{llm_sized_transcript}}
 
 
 You will generate increasingly concise, entity-dense summaries of the above video.
@@ -214,5 +235,5 @@ Keywords:
 ...
 
 Extract keywords from the following text according to these instructions:
-{{llm-sized-transcript}}
+{{llm_sized_transcript}}
 ```

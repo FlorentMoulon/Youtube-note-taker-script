@@ -69,13 +69,13 @@ class Parser:
         if content.find("{{transcript_with_timecode}}") != -1:
             content = content.replace("{{transcript_with_timecode}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters, with_timecode=True))
             
-        if content.find("{{llm-sized-transcript}}") != -1:
+        if content.find("{{llm_sized_transcript}}") != -1:
             shorter_transcript = self.get_shorter_transcript(self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
-            content = content.replace("{{llm-sized-transcript}}", shorter_transcript)
+            content = content.replace("{{llm_sized_transcript}}", shorter_transcript)
             
-        if content.find("{{transcript-without-sponsorship}}") != -1:
+        if content.find("{{transcript_without_sponsorship}}") != -1:
             cleaned_transcript = self.get_transcript_without_sponsorship(self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
-            content = content.replace("{{transcript-without-sponsorship}}", cleaned_transcript)
+            content = content.replace("{{transcript_without_sponsorship}}", cleaned_transcript)
             
         return content
     
@@ -119,9 +119,6 @@ class Parser:
         prompts = self.parse_prompts(content)
         
         return prompts, variables
-
-
-
 
 
 
@@ -190,7 +187,6 @@ class Parser:
         return combined_summary
 
 
-
     def create_chunks_with_overlap(self, text: str, chunk_size_in_word: int, overlap: int):
         words = text.split()
         chunks = []
@@ -212,7 +208,6 @@ class Parser:
 
 
 # ---------------------- Cleaning ----------------------
-
 
     def remove_sponsorship(self, text: str) -> str:
         # a= self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)

@@ -183,13 +183,6 @@ class App:
 
 
 
-
-
-
-
-
-
-
     def on_create_button_click(self):
         video_url = self.url_entry.get()
         file_name = self.file_name_entry.get()
