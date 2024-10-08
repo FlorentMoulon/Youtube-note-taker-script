@@ -1,0 +1,5 @@
+youtube_transcript_api
+beautifulsoup4
+requests
+groq
+python-dotenv

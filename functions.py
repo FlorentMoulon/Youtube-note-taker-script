@@ -24,7 +24,7 @@ def get_chapters_data(youtube_url):
     return scrapper.get_chapters()
 
 
-def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]): #TODO selected_chapters
+def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]):
     logger.landmark_log()
     logger.save_log(f"Generating notes for video: {youtube_url} with file name: {file_name} and template: {template_path}")
     

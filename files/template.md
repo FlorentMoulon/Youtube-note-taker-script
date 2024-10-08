@@ -1,21 +1,32 @@
-Everything before the 3 dashes will be ignored
+### Variables
+All {{variable_name}} will be replace by their value (if it exist)
 
-You can use these variable inside the template, the script will replace them by their value.
+Here is a list of all the script variables :
 - {{date}} *today*
 - {{file_name}} *of the .md document*
 - {{publication_date}}
 - {{video_duration}}
 - {{channel}}
 - {{video_description}}
-- {{video_tags}}
+- {{video_tags}} *separated by ', '*
 - {{video_title}}
 - {{video_url}}
-- {{transcript}}
+- {{transcript}} *full transcript of the video*
+- {{transcript_with_timecode}} *full transcript of the video with the timecode*
+- {{llm_sized_transcript}} *a pre-summarized transcript (using SUMMARIZE_CHUNK prompt to reduce the size of chunk of the transcript)*
+- {{transcript_without_sponsorship}} *a llm_sized transcript where all the sponred part of the video are removed (using REMOVE_SPONSOR prompt)*
 
 
-- {{transcript_with_timecode}}
+### Prompts
+All {{prompt_name}} will be replace by the output of the LLM for the prompt.
 
 
+### Customization
+Feel free to customize this template to feat your own needs.
+Keep in mind that everything above the first 3 dashes will be ignored, even if you don't have yaml header.
+
+
+### Everything before those 3 dashes will be ignored
 ---
 aliases: 
 tags: 
