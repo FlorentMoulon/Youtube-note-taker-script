@@ -76,14 +76,21 @@ def get_transcript_data(video_url):
         return None
 
 
-def get_transcript(video_url, with_chapter=True ,with_timestamps=False):
+def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_timestamps=False):
     transcript_text =""
     
     if with_chapter:
         chapter_divided_transcript = get_chapter_divided_transcript(video_url, with_timestamps)
-        for chapter in chapter_divided_transcript:
+        
+        filtered_chapters = chapter_divided_transcript
+        if len(selected_chapters)>0:
+            selected_titles = [chap['title'] for chap in selected_chapters]
+            filtered_chapters = [chapter for chapter in chapter_divided_transcript if chapter['title'] in selected_titles]
+
+        for chapter in filtered_chapters:
             transcript_text += f"\n# {chapter['title']}\n{chapter['content']}\n"
         return transcript_text
+    
         
     if with_timestamps:
         transcript_data = get_transcript_data(video_url)
@@ -190,6 +197,7 @@ class Scrapper:
         self.video_details = None
         self.transcript = {}
         self.video_description = None
+        self.chapters = None
         
     def get_video_details(self):
         if not self.video_details:
@@ -201,10 +209,20 @@ class Scrapper:
             self.video_description = get_video_description(self.youtube_url)
         return self.video_description
     
-    def get_transcript(self, with_chapter=True, with_timestamps=False):
+    def get_transcript(self, with_chapter=True, selected_chapters=[], with_timestamps=False):
         if not self.transcript.get(with_chapter):
             self.transcript[with_chapter] = {}
         if not self.transcript.get(with_chapter).get(with_timestamps):
-            self.transcript[with_chapter, with_timestamps] = get_transcript(self.youtube_url, with_chapter, with_timestamps)
+            self.transcript[with_chapter, with_timestamps] = get_transcript(self.youtube_url, with_chapter, selected_chapters, with_timestamps)
             
         return self.transcript[with_chapter, with_timestamps]
+    
+    
+    def get_chapters(self):
+        if not self.chapters:
+            self.chapters = get_video_chapters(self.youtube_url)
+        return self.chapters
+    
+    def get_chapters_text(self):
+        chapters = self.get_chapters()
+        return [f"{chapter['time']} {chapter['title']}" for chapter in chapters] 
