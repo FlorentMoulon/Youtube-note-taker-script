@@ -29,7 +29,7 @@ This Python application allows users to create detailed notes from YouTube video
 ## Installation
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/youtube-notes-generator.git
+   git clone https://github.com/FlorentMoulon/Youtube-note-taker-script
    cd youtube-notes-generator
    ```
 2. Install dependencies:
