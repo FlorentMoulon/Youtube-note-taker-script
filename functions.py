@@ -19,6 +19,10 @@ def get_chapters(youtube_url):
     scrapper = Scrapper(youtube_url, logger)
     return scrapper.get_chapters_text()
 
+def get_chapters_data(youtube_url):
+    scrapper = Scrapper(youtube_url, logger)
+    return scrapper.get_chapters()
+
 
 def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]): #TODO selected_chapters
     logger.landmark_log()
@@ -28,7 +32,7 @@ def generate_note_file(youtube_url, file_name, folder_path, template_path, promp
     scrapper = Scrapper(youtube_url, logger)
 
     # Generate notes
-    parser = Parser(prompt_path, scrapper, generator, logger)
+    parser = Parser(prompt_path, scrapper, selected_chapters, generator, logger)
     md_content = parser.replace_variable(prepare_content_from_template(template_path), file_name)
     
     # Save notes to file

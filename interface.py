@@ -46,10 +46,12 @@ class App:
         self.init_window()
         self.load_fields()
         self.chapters = []
+        self.chapters_data = []
         self.chapter_vars = []
 
     def on_url_change(self, event):
         video_url = self.url_entry.get()
+        self.chapters_data = get_chapters_data(video_url)
         self.chapters = get_chapters(video_url)
         self.update_chapter_selection()
 
@@ -194,7 +196,7 @@ class App:
         save_path = self.path_combo.get()
         template_path = self.template_path_combo.get()
         prompts_path = self.prompts_path_combo.get()
-        selected_chapters = [chapter for chapter, var in zip(self.chapters, self.chapter_vars) if var.get()]
+        selected_chapters = [chapter_data for chapter_data, var in zip(self.chapters_data, self.chapter_vars) if var.get()]
         
         self.save_fields()
     

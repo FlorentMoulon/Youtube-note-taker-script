@@ -10,10 +10,11 @@ def get_file_content(path):
 
 
 class Parser:
-    def __init__(self, prompt_path, scrapper, generator=Generator(), logger=Logger()):
+    def __init__(self, prompt_path, scrapper, selected_chapters= [], generator=Generator(), logger=Logger()):
         self.generator = generator
         self.logger = logger
         self.scrapper = scrapper
+        self.selected_chapters = selected_chapters
         self.prompts = {}
         self.variables = {}
         self.short_transcript = {}
@@ -40,25 +41,10 @@ class Parser:
         
         content = content.replace("{{video_description}}", self.scrapper.get_video_description())
         
+        content = self.replace_trasncript(content)
+
         for variable in self.variables:
             content = content.replace("{{"+variable+"}}", self.variables[variable])
-            
-        if content.find("{{transcript}}") != -1:
-            content = content.replace("{{transcript}}", self.scrapper.get_transcript())
-            
-        if content.find("{{transcript_with_timecode}}") != -1:
-            content = content.replace("{{transcript_with_timecode}}", self.scrapper.get_transcript(with_timecode=True))
-            
-        if content.find("{{llm-sized-transcript}}") != -1:
-            shorter_transcript = self.get_shorter_transcript(self.scrapper.get_transcript())
-            content = content.replace("{{llm-sized-transcript}}", shorter_transcript)
-            
-        if content.find("{{transcript-without-sponsorship}}") != -1:
-            cleaned_transcript = self.get_transcript_without_sponsorship(self.scrapper.get_transcript())
-            content = content.replace("{{transcript-without-sponsorship}}", cleaned_transcript)
-            
-
-        
         
         for prompt in self.prompts:
             if content.find("{{"+prompt+"}}") != -1:
@@ -75,6 +61,24 @@ class Parser:
                 content = content.replace("{{"+prompt+"}}", completion)
         
         return content
+
+    def replace_trasncript(self, content):
+        if content.find("{{transcript}}") != -1:
+            content = content.replace("{{transcript}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
+            
+        if content.find("{{transcript_with_timecode}}") != -1:
+            content = content.replace("{{transcript_with_timecode}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters, with_timecode=True))
+            
+        if content.find("{{llm-sized-transcript}}") != -1:
+            shorter_transcript = self.get_shorter_transcript(self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
+            content = content.replace("{{llm-sized-transcript}}", shorter_transcript)
+            
+        if content.find("{{transcript-without-sponsorship}}") != -1:
+            cleaned_transcript = self.get_transcript_without_sponsorship(self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
+            content = content.replace("{{transcript-without-sponsorship}}", cleaned_transcript)
+            
+        return content
+    
 
 
 # ---------------------- Parsing ----------------------
