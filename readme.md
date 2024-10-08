@@ -24,6 +24,7 @@ This Python application allows users to create detailed notes from YouTube video
   - requests
   - groq
   - python-dotenv
+- A [Groq API key](https://console.groq.com/keys) to use Groc LLM computation. (a free plan is available)
 
 
 ## Installation
@@ -36,7 +37,7 @@ This Python application allows users to create detailed notes from YouTube video
    ```
    pip install -r requirements.txt
    ```
-3. Create a `.env` file in the project root and add your Groq API key:
+3. Create a `.env` file in the project root and add your [Groq API key](https://console.groq.com/keys) :
    ```
    GROQ_API_KEY="your_groq_api_key_here"
    ```
