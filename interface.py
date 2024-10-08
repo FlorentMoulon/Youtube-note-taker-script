@@ -56,98 +56,6 @@ class App:
         self.chapter_vars = []
         
 
-    def on_create_button_click(self):
-        video_url = self.url_entry.get()
-        file_name = self.file_name_entry.get()
-        save_path = self.path_combo.get()
-        template_path = self.template_path_combo.get()
-        prompts_path = self.prompts_path_combo.get()
-        selected_chapters = [chapter for chapter, var in zip(self.chapters, self.chapter_vars) if var.get()]
-        
-        self.save_fields()
-    
-        generate_note_file(video_url, file_name, save_path, template_path, prompts_path, selected_chapters)
-
-
-    def select_folder(self):
-        folder_path = filedialog.askdirectory()
-        if folder_path:
-            self.path_combo.set(folder_path)
-            self.update_combo_history(self.path_combo, folder_path)
-        self.save_fields()
-            
-    def select_template_file(self):
-        file_path = filedialog.askopenfilename(
-            title="Select Template File",
-            filetypes=(("Text files", "*.md"), ("All files", "*.*"))
-        )
-        if file_path:
-            self.template_path_combo.set(file_path)
-            self.update_combo_history(self.template_path_combo, file_path)
-        self.save_fields()
-    
-    def select_prompts_file(self):
-        file_path = filedialog.askopenfilename(
-            title="Select Prompts File",
-            filetypes=(("Text files", "*.md *.txt"), ("All files", "*.*"))
-        )
-        if file_path:
-            self.prompts_path_combo.set(file_path)
-            self.update_combo_history(self.prompts_path_combo, file_path)
-        self.save_fields()
-
-    def update_combo_history(self, combo, value):
-        values = list(combo['values'])
-        if value not in values:
-            values.insert(0, value)
-            combo['values'] = values[:10]  # Keep only the 10 most recent entries
-
-
-    def create_save_file(self):
-        # Get the directory of the current script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Define the path to the 'files' folder
-        files_folder = os.path.join(script_dir, 'files')
-        
-        # Check if the 'files' folder exists, create it if it doesn't
-        if not os.path.exists(files_folder):
-            try:
-                os.makedirs(files_folder)
-            except OSError as e:
-                print(f"Error creating 'files' folder: {e}")
-        
-        # Construct the path to saved_fields.json
-        self.config_file = os.path.join(files_folder, 'saved_fields.json')
-        return self.config_file
-
-    def save_fields(self):
-        field_data = {
-            "file_name": self.file_name_entry.get(),
-            "save_path": list(self.path_combo['values']),
-            "template_path": list(self.template_path_combo['values']),
-            "prompts_path": list(self.prompts_path_combo['values'])
-        }
-        with open(self.config_file, 'w') as f:
-            json.dump(field_data, f, indent=4)
-
-    def load_fields(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as f:
-                field_data = json.load(f)
-            self.file_name_entry.insert(0, field_data.get("file_name", ""))
-            self.path_combo['values'] = field_data.get("save_path", [])
-            self.template_path_combo['values'] = field_data.get("template_path", [])
-            self.prompts_path_combo['values'] = field_data.get("prompts_path", [])
-            
-            # Set the most recent value (first in the list) as the current value
-            if self.path_combo['values']:
-                self.path_combo.set(self.path_combo['values'][0])
-            if self.template_path_combo['values']:
-                self.template_path_combo.set(self.template_path_combo['values'][0])
-            if self.prompts_path_combo['values']:
-                self.prompts_path_combo.set(self.prompts_path_combo['values'][0])
-                
     
     def on_url_change(self, event):
         video_url = self.url_entry.get()
@@ -270,6 +178,106 @@ class App:
         self.root.geometry(f"{window_width}x{window_height}")
 
 
+
+
+
+
+
+
+
+
+
+
+    def on_create_button_click(self):
+        video_url = self.url_entry.get()
+        file_name = self.file_name_entry.get()
+        save_path = self.path_combo.get()
+        template_path = self.template_path_combo.get()
+        prompts_path = self.prompts_path_combo.get()
+        selected_chapters = [chapter for chapter, var in zip(self.chapters, self.chapter_vars) if var.get()]
+        
+        self.save_fields()
+    
+        generate_note_file(video_url, file_name, save_path, template_path, prompts_path, selected_chapters)
+
+    def select_folder(self):
+        folder_path = filedialog.askdirectory()
+        if folder_path:
+            self.path_combo.set(folder_path)
+            self.update_combo_history(self.path_combo, folder_path)
+        self.save_fields()
+            
+    def select_template_file(self):
+        file_path = filedialog.askopenfilename(
+            title="Select Template File",
+            filetypes=(("Text files", "*.md"), ("All files", "*.*"))
+        )
+        if file_path:
+            self.template_path_combo.set(file_path)
+            self.update_combo_history(self.template_path_combo, file_path)
+        self.save_fields()
+    
+    def select_prompts_file(self):
+        file_path = filedialog.askopenfilename(
+            title="Select Prompts File",
+            filetypes=(("Text files", "*.md *.txt"), ("All files", "*.*"))
+        )
+        if file_path:
+            self.prompts_path_combo.set(file_path)
+            self.update_combo_history(self.prompts_path_combo, file_path)
+        self.save_fields()
+
+    def update_combo_history(self, combo, value):
+        values = list(combo['values'])
+        if value not in values:
+            values.insert(0, value)
+            combo['values'] = values[:10]  # Keep only the 10 most recent entries
+
+    def create_save_file(self):
+        # Get the directory of the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Define the path to the 'files' folder
+        files_folder = os.path.join(script_dir, 'files')
+        
+        # Check if the 'files' folder exists, create it if it doesn't
+        if not os.path.exists(files_folder):
+            try:
+                os.makedirs(files_folder)
+            except OSError as e:
+                print(f"Error creating 'files' folder: {e}")
+        
+        # Construct the path to saved_fields.json
+        self.config_file = os.path.join(files_folder, 'saved_fields.json')
+        return self.config_file
+
+    def save_fields(self):
+        field_data = {
+            "file_name": self.file_name_entry.get(),
+            "save_path": list(self.path_combo['values']),
+            "template_path": list(self.template_path_combo['values']),
+            "prompts_path": list(self.prompts_path_combo['values'])
+        }
+        with open(self.config_file, 'w') as f:
+            json.dump(field_data, f, indent=4)
+
+    def load_fields(self):
+        if os.path.exists(self.config_file):
+            with open(self.config_file, 'r') as f:
+                field_data = json.load(f)
+            self.file_name_entry.insert(0, field_data.get("file_name", ""))
+            self.path_combo['values'] = field_data.get("save_path", [])
+            self.template_path_combo['values'] = field_data.get("template_path", [])
+            self.prompts_path_combo['values'] = field_data.get("prompts_path", [])
+            
+            # Set the most recent value (first in the list) as the current value
+            if self.path_combo['values']:
+                self.path_combo.set(self.path_combo['values'][0])
+            if self.template_path_combo['values']:
+                self.template_path_combo.set(self.template_path_combo['values'][0])
+            if self.prompts_path_combo['values']:
+                self.prompts_path_combo.set(self.prompts_path_combo['values'][0])
+                
 
     def run(self):
         self.root.mainloop()
