@@ -34,18 +34,11 @@ class ScrollableWindow(tk.Frame):
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 
-class WrappingCheckbutton(tk.Checkbutton):
-    def __init__(self, parent, **kwargs):
-        text = kwargs.pop('text', '')
-        tk.Checkbutton.__init__(self, parent, **kwargs)
-        self.bind('<Configure>', lambda e: self._wrap_text(e, text))
 
-    def _wrap_text(self, event, text):
-        width = event.width
-        if width > 5:
-            self.config(wraplength=width-5)
-            self.config(text=text)
-
+class WrappingLabel(tk.Label):
+    def __init__(self, parent, text="", width=20, *args, **kwargs):
+        tk.Label.__init__(self, parent, text=text, *args, **kwargs)
+        self.config(wraplength=width*10, justify="left", anchor="w")
 
 class App:
     def __init__(self):
@@ -54,14 +47,12 @@ class App:
         self.load_fields()
         self.chapters = []
         self.chapter_vars = []
-        
 
-    
     def on_url_change(self, event):
         video_url = self.url_entry.get()
         self.chapters = get_chapters(video_url)
         self.update_chapter_selection()
-    
+
     def toggle_all_chapters(self):
         state = self.select_all_var.get()
         for var in self.chapter_vars:
@@ -80,16 +71,24 @@ class App:
         if self.chapters:
             # Create "Select All" checkbox
             self.select_all_var = IntVar()
-            select_all_cb = WrappingCheckbutton(chapter_sub_frame, text="Select All", 
-                                                variable=self.select_all_var, 
-                                                command=self.toggle_all_chapters)
-            select_all_cb.pack(anchor='w', padx=5, fill='x')
+            select_all_cb = Checkbutton(chapter_sub_frame, text="Select All", 
+                                        variable=self.select_all_var, 
+                                        command=self.toggle_all_chapters,
+                                        anchor='w')
+            select_all_cb.pack(fill='x', padx=5)
 
             # Create a checkbox for each chapter
             for chapter in self.chapters:
                 var = IntVar()
-                cb = WrappingCheckbutton(chapter_sub_frame, text=chapter, variable=var)
-                cb.pack(anchor='w', padx=5, fill='x')
+                cb_frame = Frame(chapter_sub_frame)
+                cb_frame.pack(fill='x', expand=True, pady=(0, 5))
+                
+                cb = Checkbutton(cb_frame, variable=var, anchor='w')
+                cb.pack(side='left', padx=(5, 0))
+                
+                chapter_label = WrappingLabel(cb_frame, text=chapter, width=40)
+                chapter_label.pack(side='left', fill='x', expand=True, padx=(5, 5))
+                
                 self.chapter_vars.append(var)
         else:
             Label(chapter_sub_frame, text="No chapters found for this video.", wraplength=300).pack(padx=5, fill='x')
@@ -97,7 +96,6 @@ class App:
         # Update the scroll region
         self.root.update()
         self.scrollable_window.canvas.configure(scrollregion=self.scrollable_window.canvas.bbox("all"))
-
 
     def init_window(self):
         self.root = tk.Tk()
@@ -176,8 +174,6 @@ class App:
         window_width = min(500, screen_width)
         window_height = min(600, screen_height)
         self.root.geometry(f"{window_width}x{window_height}")
-
-
 
 
 
