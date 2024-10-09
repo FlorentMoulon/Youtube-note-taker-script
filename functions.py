@@ -10,8 +10,6 @@ from Scrapper import Scrapper
 # use 'utf-8' for printing to console
 sys.stdout.reconfigure(encoding='utf-8')
 
-# Create a generator instance who allow to call the LLM
-generator = Generator()
 logger = Logger(True)
 
 
@@ -27,6 +25,8 @@ def get_chapters_data(youtube_url):
 def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]):
     logger.landmark_log()
     logger.save_log(f"Generating notes for video: {youtube_url} with file name: {file_name} and template: {template_path}")
+    
+    generator = Generator()
     
     # Get video details
     scrapper = Scrapper(youtube_url, logger)

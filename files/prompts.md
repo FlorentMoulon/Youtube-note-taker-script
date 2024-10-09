@@ -207,7 +207,7 @@ Read and analyze the entire text thoroughly.
 Identify the main topics, themes, and key concepts discussed.
 
 Keyword Extraction:
-Extract {{min_nb_keyword}}-{{max_nb_keyword}} keywords or key phrases that best represent the core content of the text.
+Extract between {{min_nb_keyword}} and {{max_nb_keyword}} keywords or key phrases maximum that best represent the core content of the text.
 Focus on nouns, noun phrases, and occasionally important verbs or adjectives.
 Prioritize words or phrases that:
 - Would be useful for categorizing or searching for this content
