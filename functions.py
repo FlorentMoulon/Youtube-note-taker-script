@@ -26,7 +26,7 @@ def generate_note_file(youtube_url, file_name, folder_path, template_path, promp
     logger.landmark_log()
     logger.save_log(f"Generating notes for video: {youtube_url} with file name: {file_name} and template: {template_path}")
     
-    generator = Generator()
+    generator = Generator(logger)
     
     # Get video details
     scrapper = Scrapper(youtube_url, logger)
