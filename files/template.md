@@ -45,6 +45,8 @@ channel: {{channel}}
 # Description
 {{prompt_summary}}
 
+# Takeaways
+{{prompt_takeaways}}
 
 # {{video_title}}
 {{prompt_detailed_note}}

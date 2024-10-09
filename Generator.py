@@ -7,9 +7,9 @@ from Logger import Logger
 DEFAULT_MODEL = "llama3-8b-8192"
 
 class Generator:
-    def __init__(self):
+    def __init__(self, logger=Logger()):
         load_dotenv()
-        self.logger = Logger()
+        self.logger = logger
         self.api_key = os.getenv("GROQ_API_KEY")
         self.client = Groq(api_key=self.api_key)
         self.model = DEFAULT_MODEL
