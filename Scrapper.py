@@ -79,7 +79,7 @@ def get_transcript_data(video_url):
 def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_timestamps=False):
     transcript_text =""
     
-    if with_chapter:
+    if with_chapter and len(get_video_chapters(video_url))>0:
         chapter_divided_transcript = get_chapter_divided_transcript(video_url, with_timestamps)
         
         filtered_chapters = chapter_divided_transcript
@@ -153,7 +153,7 @@ def get_chapter_divided_transcript(video_url, with_timestamps=False):
     
     chapters = get_video_chapters(video_url)
     if not chapters or len(chapters) == 0:
-        return get_transcript(video_url)
+        return get_transcript(video_url, with_chapter=False, with_timestamps=with_timestamps)
     
     transcript_data = get_transcript_data(video_url)
     chapter_divided_transcript = []

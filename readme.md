@@ -24,6 +24,7 @@ This Python application allows users to create detailed notes from YouTube video
   - requests
   - groq
   - python-dotenv
+- A [Groq API key](https://console.groq.com/keys) to use Groc LLM computation. (a free plan is available)
 
 
 ## Installation
@@ -36,7 +37,7 @@ This Python application allows users to create detailed notes from YouTube video
    ```
    pip install -r requirements.txt
    ```
-3. Create a `.env` file in the project root and add your Groq API key:
+3. Create a `.env` file in the project root and add your [Groq API key](https://console.groq.com/keys) :
    ```
    GROQ_API_KEY="your_groq_api_key_here"
    ```
@@ -72,7 +73,7 @@ The `template.md` and `prompts.md` files are made to be customize to feat your n
 Here is short description of how they work, you can find more informations directly in the files.
 
 ### Variables
-A variable are define in `prompts.md` and can be used in `template.md` and `prompts.md`.
+A variable are define in `prompts.md` and can be used in `template.md`, `prompts.md` and file name.
 All {{variable_name}} used inside those 2 files will be replace by their value (if it exist) during the computation
 
 The app give you access to a bunch of basic informations like {{video_name}} or {{transcript}}. You can also create your own variables.

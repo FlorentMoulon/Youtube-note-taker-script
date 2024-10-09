@@ -267,7 +267,9 @@ class App:
         field_data = {
             "save_path": list(self.path_combo['values']),
             "template_path": list(self.template_path_combo['values']),
-            "prompts_path": list(self.prompts_path_combo['values'])
+            "prompts_path": list(self.prompts_path_combo['values']),
+            "file_name": self.file_name_entry.get(),
+            "video_url": self.url_entry.get()
         }
         with open(self.config_file, 'w') as f:
             json.dump(field_data, f, indent=4)
@@ -279,6 +281,8 @@ class App:
             self.path_combo['values'] = field_data.get("save_path", [])
             self.template_path_combo['values'] = field_data.get("template_path", [])
             self.prompts_path_combo['values'] = field_data.get("prompts_path", [])
+            self.file_name_entry.insert(0, field_data.get("file_name", ""))
+            self.url_entry.insert(0, field_data.get("video_url", ""))
             
             # Set the most recent value (first in the list) as the current value
             if self.path_combo['values']:

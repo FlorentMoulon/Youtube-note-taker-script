@@ -1,6 +1,7 @@
 
 import os
 import sys
+import re
 
 from Logger import Logger
 from Parser import Parser
@@ -10,9 +11,23 @@ from Scrapper import Scrapper
 # use 'utf-8' for printing to console
 sys.stdout.reconfigure(encoding='utf-8')
 
-# Create a generator instance who allow to call the LLM
-generator = Generator()
 logger = Logger(True)
+
+
+def sanitize_filename(filename):
+    # Keep alphanumeric characters, spaces, hyphens, and underscores
+    sanitized = re.sub(r'[^\w\-_ ]', '', filename)
+    
+    # Ensure the filename isn't empty after sanitization
+    if not sanitized:
+        sanitized = "unnamed_file"
+    
+    # Truncate filename if it's too long (max 255 characters including extension)
+    max_length = 250
+    if len(sanitized) > max_length:
+        sanitized = name[:max_length - 1]
+    
+    return sanitized
 
 
 def get_chapters(youtube_url):
@@ -26,17 +41,24 @@ def get_chapters_data(youtube_url):
 
 def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]):
     logger.landmark_log()
-    logger.save_log(f"Generating notes for video: {youtube_url} with file name: {file_name} and template: {template_path}")
+    
+    generator = Generator(logger)
     
     # Get video details
     scrapper = Scrapper(youtube_url, logger)
 
     # Generate notes
     parser = Parser(prompt_path, scrapper, selected_chapters, generator, logger)
+    
+    file_name = parser.replace_variable(file_name, file_name)
+    file_name = sanitize_filename(file_name)
+    
     md_content = parser.replace_variable(prepare_content_from_template(template_path), file_name)
     
     # Save notes to file
     create_markdown_file(md_content, file_name, folder_path)
+    logger.save_log(f"Generating notes for video: {youtube_url} with file name: {file_name} and template: {template_path}")
+
 
 
 def create_markdown_file(md_content, file_name, folder_path):

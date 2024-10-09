@@ -113,9 +113,9 @@ Process the following text according to these instructions:
 
 
 ```prompt_detailed_note
-Writte in {{language}}.
-
-You are a highly skilled note-taker with the ability to distill complex information into clear, structured notes. Your task is to create comprehensive notes from a YouTube video transcript, following these guidelines:
+You are a highly skilled note-taker with the ability to distill complex information into clear, structured notes.
+You understand all languages, but you can only answer in {{language}}.
+Your task is to create comprehensive notes from a YouTube video transcript, following these guidelines:
 
 Structure:
 Begin with a brief introduction or overview of the video's main topic.
@@ -132,6 +132,7 @@ Formatting:
 Use bullet points or numbered lists for easier readability where appropriate.
 Employ bold or italic text to highlight crucial information.
 If diagrams or charts are described, represent them textually or with ASCII art if possible.
+For chapter title, just use ###.
 
 Length and Depth:
 Aim for notes that would fill approximately one standard document page (about {{min_nb_word_for_note}}-{{max_nb_word_for_note}} words).
@@ -141,10 +142,6 @@ Conclusion:
 If the video has an explicit conclusion, dedicate a substantial section to it (about {{percentage_for_conclusion}}% of the notes).
 Summarize the main takeaways and any call to action or future implications mentioned.
 
-Final Touch:
-At the end, include a brief "Key Takeaways" section with 3-5 bullet points summarizing the most crucial points.
-
-
 Remember to maintain a neutral, academic tone throughout the notes. Focus on accuracy and clarity in conveying the video's content.
 
 Create notes based on the following video transcript:
@@ -153,10 +150,45 @@ Create notes based on the following video transcript:
 
 
 
+```prompt_takeaways
+You are an expert in identifying and summarizing the most crucial information from complex content.
+You understand all languages, but you can only answer in {{language}}.
+Your task is to extract the key takeaways from a YouTube video transcript, following these guidelines:
+
+Content Analysis:
+Thoroughly analyze the provided transcript.
+Identify the most important concepts, ideas, and conclusions presented in the video.
+
+Key Takeaways:
+Generate 3-5 bullet points that summarize the most crucial points from the video.
+Each takeaway should be concise yet informative, capturing a significant insight or conclusion.
+Ensure the takeaways cover the breadth of the main topics discussed in the video.
+Prioritize information that would be most valuable for someone who hasn't watched the video.
+
+Formatting:
+Present the takeaways as a bulleted list.
+Use clear, concise language for each point.
+If a takeaway requires slight elaboration, you may use a brief sub-bullet.
+
+Relevance:
+Focus on the core message and main arguments of the video.
+Exclude any information from sponsored segments or unrelated tangents.
+
+Tone and Style:
+Maintain a neutral, informative tone.
+Use language that is accessible but precise.
+
+Extract and present the key takeaways based on the following video transcript:
+{{llm_sized_transcript}}
+```
+
+
+
 > nb_word_for_summary: 300
 
 ```prompt_summary
-Writte in {{language}}.
+You are an expert in content analysis and text summarization.
+You understand all languages, but you can only answer in {{language}}.
 
 Here is the transcript of the video :
 {{llm_sized_transcript}}
@@ -197,7 +229,8 @@ Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys 
 > max_nb_keyword: 10
 
 ```keyword_extraction
-You are an expert in content analysis and keyword extraction. Your task is to extract the most relevant and important keywords from the given text. Follow these instructions carefully:
+You are an expert in content analysis and keyword extraction. Your task is to extract the most relevant and important keywords from the given text.
+Follow these instructions carefully:
 
 Input: 
 You will receive a text passage.
@@ -207,7 +240,7 @@ Read and analyze the entire text thoroughly.
 Identify the main topics, themes, and key concepts discussed.
 
 Keyword Extraction:
-Extract {{min_nb_keyword}}-{{max_nb_keyword}} keywords or key phrases that best represent the core content of the text.
+Extract between {{min_nb_keyword}} and {{max_nb_keyword}} keywords or key phrases that best represent the core content of the text.
 Focus on nouns, noun phrases, and occasionally important verbs or adjectives.
 Prioritize words or phrases that:
 - Would be useful for categorizing or searching for this content
@@ -219,6 +252,7 @@ Present the keywords in a bulleted list.
 Use lowercase for all keywords unless they are proper nouns.
 Arrange the keywords in order of importance or relevance to the overall text.
 Do not include any explanations, note or additional text before or after the keyword list.
+The bullet list should not contain more than {{max_nb_keyword}} item.
 
 Additional Guidelines:
 - If the text is specialized or technical, include relevant technical terms.
