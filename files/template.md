@@ -34,7 +34,7 @@ date: {{date}}
 video_title: {{video_title}}
 video_url: {{video_url}}
 video_duration: {{video_duration}}
-video_publication Date: {{publication_date}}
+video_publication_date: {{publication_date}}
 channel: {{channel}}
 ---
 

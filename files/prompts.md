@@ -93,9 +93,9 @@ Keep all non-sponsored content exactly as it appears in the original text.
 Maintain the original language of the text.
 
 Output Format:
-Provide the full text, including all unmodified parts.
-Do not add any explanations, comments, or markers about removed content.
-Ensure the output reads as a continuous, natural text.
+- Provide the full text, i beg you to including all unmodified parts, it's really important.
+- Please, do not add any explanations, comments, or markers about removed content.
+- Ensure the output reads as a continuous, natural text.
 
 If No Sponsored Content:
 If you don't find any sponsored content, output the entire original text without changes.
@@ -118,9 +118,14 @@ You understand all languages, but you can only answer in {{language}}.
 Your task is to create comprehensive notes from a YouTube video transcript, following these guidelines:
 
 Structure:
-Begin with a brief introduction or overview of the video's main topic.
-Follow the structure of the video, organizing information into main sections and subsections as presented.
+Follow the structure of the video, organizing information into main ## sections and ### subsections as presented.
 Use appropriate Markdown syntax for headings, subheadings, lists, and emphasis.
+
+Formatting:
+- Use bullet points or numbered lists for easier readability where appropriate.
+- Employ **bold** on keyword that carry the meaning of each paragraph.
+- Use the markdown heading ## for main sections and ### for sub section.
+- When you quote the original text use the quote markdown notation > "quote"
 
 Content:
 Capture all key points, important details, and relevant examples.
@@ -128,11 +133,6 @@ Omit any sponsored content or unrelated tangents.
 Include important definitions, statistics, or data mentioned.
 Note any significant quotes, attributing them properly.
 
-Formatting:
-Use bullet points or numbered lists for easier readability where appropriate.
-Employ bold or italic text to highlight crucial information.
-If diagrams or charts are described, represent them textually or with ASCII art if possible.
-For chapter title, just use ###.
 
 Length and Depth:
 Aim for notes that would fill approximately one standard document page (about {{min_nb_word_for_note}}-{{max_nb_word_for_note}} words).
@@ -142,9 +142,11 @@ Conclusion:
 If the video has an explicit conclusion, dedicate a substantial section to it (about {{percentage_for_conclusion}}% of the notes).
 Summarize the main takeaways and any call to action or future implications mentioned.
 
-Remember to maintain a neutral, academic tone throughout the notes. Focus on accuracy and clarity in conveying the video's content.
+Additional Guidelines:
+Remember to maintain the tone of the original text throughout the notes. Focus on accuracy and clarity in conveying the video's content.
+It's really important that you only use {{language}} for your answer, I beg you.
 
-Create notes based on the following video transcript:
+Create notes based on the following video transcript :
 {{llm_sized_transcript}}
 ```
 
@@ -177,6 +179,8 @@ Exclude any information from sponsored segments or unrelated tangents.
 Tone and Style:
 Maintain a neutral, informative tone.
 Use language that is accessible but precise.
+Remember that it's really important that you only use {{language}} for your answer, I beg you.
+
 
 Extract and present the key takeaways based on the following video transcript:
 {{llm_sized_transcript}}
@@ -221,7 +225,30 @@ Repeat the 2 steps 5 times now.
 
 Output Format:
 Do not include any explanations, note or additional text before or after the keyword list.
-Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary" .
+Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary".
+Please respect carefully the JSON synthax as bellow :
+[
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+}
+]
 ```
 
 
@@ -248,17 +275,18 @@ Prioritize words or phrases that:
 - Are central to the main ideas or arguments
 
 Output Format:
-Present the keywords in a bulleted list.
-Use lowercase for all keywords unless they are proper nouns.
-Arrange the keywords in order of importance or relevance to the overall text.
-Do not include any explanations, note or additional text before or after the keyword list.
-The bullet list should not contain more than {{max_nb_keyword}} item.
+- Present the keywords in a bulleted list.
+- Use lowercase for all keywords unless they are proper nouns.
+- Arrange the keywords in order of importance or relevance to the overall text.
+- Do not include any explanations, note or additional text before or after the keyword list.
+- The bullet list should not contain more than {{max_nb_keyword}} items.
 
 Additional Guidelines:
 - If the text is specialized or technical, include relevant technical terms.
 - For longer texts, ensure the keywords cover the breadth of topics discussed.
 - Avoid overly general terms unless they are crucially important to the text's theme.
 - Maintain the original language of the text.
+- Respect carefully the limitation of {{max_nb_keyword}} keywords.
 
 Output Structure:
 Your response should follow this exact structure:
@@ -269,5 +297,5 @@ Keywords:
 ...
 
 Extract keywords from the following text according to these instructions:
-{{llm_sized_transcript}}
+{{prompt_detailed_note}}
 ```

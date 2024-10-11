@@ -3,6 +3,7 @@ import math
 from Generator import Generator
 from Logger import Logger
 from Scrapper import Scrapper
+from files.prompt_functions import *
 
 def get_file_content(path):
     with open(path, 'r') as file:
@@ -41,11 +42,16 @@ class Parser:
         
         content = content.replace("{{video_description}}", self.scrapper.get_video_description())
         
-        content = self.replace_trasncript(content)
+        content = self.replace_transcript(content)
 
         for variable in self.variables:
             content = content.replace("{{"+variable+"}}", self.variables[variable])
+            
+        content = self.replace_prompt(content, file_name)
         
+        return content
+    
+    def replace_prompt(self, content, file_name):
         for prompt in self.prompts:
             if content.find("{{"+prompt+"}}") != -1:
                 # parse prompt
@@ -58,11 +64,15 @@ class Parser:
                     user_prompt = prompt_text,
                     name = prompt
                 )
+                
+                # call prompt function
+                if PROMPT_FUNCITONS.get(prompt) is not None:
+                    completion = PROMPT_FUNCITONS[prompt](completion)
+                
                 content = content.replace("{{"+prompt+"}}", completion)
-        
         return content
 
-    def replace_trasncript(self, content):
+    def replace_transcript(self, content):
         if content.find("{{transcript}}") != -1:
             content = content.replace("{{transcript}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
             
@@ -137,7 +147,7 @@ class Parser:
         estimated_tokens = self.generator.estimate_token_count(transcript)
         
         if estimated_tokens <= model_max_tokens - margin:
-            return transcript
+            return self.generate_transcript_without_sponsorship(transcript)
         
         # Calculate the chunk size and overlap (in token)
         chunk_size = model_max_tokens - margin
@@ -210,11 +220,6 @@ class Parser:
 # ---------------------- Cleaning ----------------------
 
     def remove_sponsorship(self, text: str) -> str:
-        # a= self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)
-        # print("/////")
-        # print(len(a))
-        # print(self.generator.estimate_token_count(a))
-        # print("/////")
         return self.generator.generate_chat_completion(
             system_prompt = "",
             user_prompt = self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)
