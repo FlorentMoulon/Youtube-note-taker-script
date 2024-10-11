@@ -25,7 +25,7 @@ def sanitize_filename(filename):
     # Truncate filename if it's too long (max 255 characters including extension)
     max_length = 250
     if len(sanitized) > max_length:
-        sanitized = name[:max_length - 1]
+        sanitized = sanitized[:max_length - 1]
     
     return sanitized
 
