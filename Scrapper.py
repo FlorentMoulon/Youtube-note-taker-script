@@ -26,13 +26,18 @@ def format_time_to_seconds(time_str):
         total_seconds = hours * 3600 + minutes * 60 + seconds
     return total_seconds
 
-def get_video_id(youtube_url):
-    video_id_match = re.search(r'v=([a-zA-Z0-9_-]+)', youtube_url)
+def get_video_id(youtube_url):    
+    if "youtu.be" in youtube_url :
+        video_id_match = re.search(r'youtu.be/([a-zA-Z0-9_-]+)', youtube_url)
+    else:
+        video_id_match = re.search(r'v=([a-zA-Z0-9_-]+)', youtube_url)
+    
     if video_id_match:
+        if video_id_match.group(1) == None:
+            print("Error, no id found, check you URL !")
         return video_id_match.group(1)
     return None
-
-
+    
     
     
 # Function to retrieve YouTube video details using scraping
