@@ -1,3 +1,19 @@
+# Here you can create functions linked to prompts to perform automated task on the LLM completions.
+# If you add a function in PROMPT_FUNCITONS with the key equal to a prompt name, it will be automatcly executed on the completion content before inserting it.
+# The function should take the content of the prompt (string) as input and return the modified content (string).
+
+# example : 
+
+# def function_for_prompt_name(content):
+#     return f"Do your stuff with the content : {content}"
+
+# PROMPT_FUNCITONS = {
+#     "prompt_name": function_for_prompt_name,
+#     ...
+# }
+    
+# ---
+
 import json
 
 def extract_JSON(content, delimiter):
@@ -10,8 +26,8 @@ def extract_JSON(content, delimiter):
     return content[start:end+len(delimiter[1])]
 
 
-def function_for_prompt_name(content):
-    return f"Do your stuff with the content : {content}"
+
+
 
 def function_for_prompt_summary(content):
     # add the missing "]" at the end of the content
@@ -40,7 +56,6 @@ def function_for_keyword_extraction(content):
     
 
 PROMPT_FUNCITONS = {
-    "prompt_name": function_for_prompt_name,
     "prompt_summary": function_for_prompt_summary,
     "keyword_extraction": function_for_keyword_extraction
 }

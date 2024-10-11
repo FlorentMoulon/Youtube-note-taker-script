@@ -83,6 +83,8 @@ Prompts used by the LLM are define in `prompts.md` and can be used in `template.
 All {{prompt_name}} will be replace by the output of the LLM for the prompt.
 Before sending a prompt to the LLM, every variable and prompt called inside will replace by their values. That mean you can chain your prompt.
 
+In the file `prompt_functions.py` you can create functions linked to prompts to perform automated task on the LLM completions before inserting them. You can use them to clean the returned text or work with JSON output for example.
+
 You'll find some basic prompts int the prompts.md file, but can also create your own prompts.
 
 

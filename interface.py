@@ -4,7 +4,7 @@ from tkinter.ttk import Combobox, Frame
 import json
 import os
 
-from functions import *
+from file_creation import *
 
 
 class ScrollableWindow(tk.Frame):

@@ -3,7 +3,7 @@ import math
 from Generator import Generator
 from Logger import Logger
 from Scrapper import Scrapper
-from prompt_functions import *
+from files.prompt_functions import *
 
 def get_file_content(path):
     with open(path, 'r') as file:
