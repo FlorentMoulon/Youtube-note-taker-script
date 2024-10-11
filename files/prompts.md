@@ -142,7 +142,9 @@ Conclusion:
 If the video has an explicit conclusion, dedicate a substantial section to it (about {{percentage_for_conclusion}}% of the notes).
 Summarize the main takeaways and any call to action or future implications mentioned.
 
+Additional Guidelines:
 Remember to maintain the tone of the original text throughout the notes. Focus on accuracy and clarity in conveying the video's content.
+It's really important that you only use {{language}} for your answer, I beg you.
 
 Create notes based on the following video transcript :
 {{llm_sized_transcript}}
@@ -177,6 +179,8 @@ Exclude any information from sponsored segments or unrelated tangents.
 Tone and Style:
 Maintain a neutral, informative tone.
 Use language that is accessible but precise.
+Remember that it's really important that you only use {{language}} for your answer, I beg you.
+
 
 Extract and present the key takeaways based on the following video transcript:
 {{llm_sized_transcript}}
