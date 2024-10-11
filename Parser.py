@@ -3,7 +3,7 @@ import math
 from Generator import Generator
 from Logger import Logger
 from Scrapper import Scrapper
-from prompt_funcitons import *
+from prompt_functions import *
 
 def get_file_content(path):
     with open(path, 'r') as file:
@@ -147,7 +147,7 @@ class Parser:
         estimated_tokens = self.generator.estimate_token_count(transcript)
         
         if estimated_tokens <= model_max_tokens - margin:
-            return transcript
+            return self.generate_transcript_without_sponsorship(transcript)
         
         # Calculate the chunk size and overlap (in token)
         chunk_size = model_max_tokens - margin
@@ -220,11 +220,6 @@ class Parser:
 # ---------------------- Cleaning ----------------------
 
     def remove_sponsorship(self, text: str) -> str:
-        # a= self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)
-        # print("/////")
-        # print(len(a))
-        # print(self.generator.estimate_token_count(a))
-        # print("/////")
         return self.generator.generate_chat_completion(
             system_prompt = "",
             user_prompt = self.prompts["REMOVE_SPONSOR"].replace("{{text}}", text)

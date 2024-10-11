@@ -14,6 +14,11 @@ def function_for_prompt_name(content):
     return f"Do your stuff with the content : {content}"
 
 def function_for_prompt_summary(content):
+    # add the missing "]" at the end of the content
+    if "]" not in content:
+        c = content.split("}")
+        content = '}'.join(c[:-1]) + "}]" + c[-1]
+        
     data = extract_JSON(content, ("[", "]"))
     
     try:
