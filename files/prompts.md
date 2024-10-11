@@ -221,7 +221,30 @@ Repeat the 2 steps 5 times now.
 
 Output Format:
 Do not include any explanations, note or additional text before or after the keyword list.
-Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary" .
+Answer in JSON. The JSON should be a list (length 5) of dictionaries whose keys are "Missing_Entities" and "Denser_Summary".
+Please respect carefully the JSON synthax as bellow :
+[
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+},
+{
+"Missing_Entities": "",
+"Denser_Summary": ""
+}
+]
 ```
 
 
@@ -252,13 +275,14 @@ Present the keywords in a bulleted list.
 Use lowercase for all keywords unless they are proper nouns.
 Arrange the keywords in order of importance or relevance to the overall text.
 Do not include any explanations, note or additional text before or after the keyword list.
-The bullet list should not contain more than {{max_nb_keyword}} item.
+The bullet list should not contain more than {{max_nb_keyword}} items.
 
 Additional Guidelines:
 - If the text is specialized or technical, include relevant technical terms.
 - For longer texts, ensure the keywords cover the breadth of topics discussed.
 - Avoid overly general terms unless they are crucially important to the text's theme.
 - Maintain the original language of the text.
+- Respect carefully the limitation of {{max_nb_keyword}} keywords.
 
 Output Structure:
 Your response should follow this exact structure:
@@ -269,5 +293,5 @@ Keywords:
 ...
 
 Extract keywords from the following text according to these instructions:
-{{llm_sized_transcript}}
+{{prompt_detailed_note}}
 ```

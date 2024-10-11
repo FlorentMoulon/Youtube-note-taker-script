@@ -3,6 +3,7 @@ import math
 from Generator import Generator
 from Logger import Logger
 from Scrapper import Scrapper
+from prompt_funcitons import *
 
 def get_file_content(path):
     with open(path, 'r') as file:
@@ -41,11 +42,16 @@ class Parser:
         
         content = content.replace("{{video_description}}", self.scrapper.get_video_description())
         
-        content = self.replace_trasncript(content)
+        content = self.replace_transcript(content)
 
         for variable in self.variables:
             content = content.replace("{{"+variable+"}}", self.variables[variable])
+            
+        content = self.replace_prompt(content, file_name)
         
+        return content
+    
+    def replace_prompt(self, content, file_name):
         for prompt in self.prompts:
             if content.find("{{"+prompt+"}}") != -1:
                 # parse prompt
@@ -58,11 +64,15 @@ class Parser:
                     user_prompt = prompt_text,
                     name = prompt
                 )
+                
+                # call prompt function
+                if PROMPT_FUNCITONS.get(prompt) is not None:
+                    completion = PROMPT_FUNCITONS[prompt](completion)
+                
                 content = content.replace("{{"+prompt+"}}", completion)
-        
         return content
 
-    def replace_trasncript(self, content):
+    def replace_transcript(self, content):
         if content.find("{{transcript}}") != -1:
             content = content.replace("{{transcript}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
             
