@@ -49,6 +49,8 @@ def function_for_keyword_extraction(content):
     
     content = content.split("\n")
     for line in content:
+        if len(line) < 2:
+            continue
         if line[0]=='-' or line[0]=='*':
             keywords += "- " + line[1:].strip() + "\n"
     

@@ -247,7 +247,7 @@ class App:
         
         # Check if config_file exists, create it if it doesn't
         if not os.path.exists(self.config_file):
-            with open(self.config_file, 'w') as f:
+            with open(self.config_file, 'w', encoding="utf-8") as f:
                 json.dump({
                     "save_path": [
                         ""
@@ -271,12 +271,12 @@ class App:
             "file_name": self.file_name_entry.get(),
             "video_url": self.url_entry.get()
         }
-        with open(self.config_file, 'w') as f:
+        with open(self.config_file, 'w', encoding="utf-8") as f:
             json.dump(field_data, f, indent=4)
 
     def load_fields(self):
         if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as f:
+            with open(self.config_file, 'r', encoding="utf-8") as f:
                 field_data = json.load(f)
             self.path_combo['values'] = field_data.get("save_path", [])
             self.template_path_combo['values'] = field_data.get("template_path", [])
