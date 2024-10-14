@@ -38,9 +38,18 @@ def get_chapters_data(youtube_url):
     scrapper = Scrapper(youtube_url, logger)
     return scrapper.get_chapters()
 
+def is_valid_path(path):
+    return os.path.exists(path)
 
 def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]):
     logger.landmark_log()
+    
+    # test if the folder path exists
+    if not is_valid_path(folder_path):
+        logger.save_log(f"Folder path {folder_path} does not exist. Please provide a valid folder path.")
+        print(f"Folder path {folder_path} does not exist. Please provide a valid folder path.")
+        return
+    
     
     generator = Generator(logger)
     

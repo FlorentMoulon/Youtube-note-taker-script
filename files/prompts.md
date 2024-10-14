@@ -147,6 +147,7 @@ Remember to maintain the tone of the original text throughout the notes. Focus o
 It's really important that you only use {{language}} for your answer, I beg you.
 
 Create notes based on the following video transcript :
+video title : {{video_title}}
 {{llm_sized_transcript}}
 ```
 
@@ -183,6 +184,7 @@ Remember that it's really important that you only use {{language}} for your answ
 
 
 Extract and present the key takeaways based on the following video transcript:
+video title : {{video_title}}
 {{llm_sized_transcript}}
 ```
 
@@ -195,6 +197,7 @@ You are an expert in content analysis and text summarization.
 You understand all languages, but you can only answer in {{language}}.
 
 Here is the transcript of the video :
+video title : {{video_title}}
 {{llm_sized_transcript}}
 
 
@@ -219,6 +222,8 @@ Guidelines:
 - The summaries should become highly dense and concise yet self-contained, i.e., easily understood without the video.
 - Missing entities can appear anywhere in the new summary.
 - Never drop entities from the previous summary. If space cannot be made, add fewer new entities.
+- Respect carefully the output language ({{language}}), it's really important.
+
 
 Remember, use the exact same number of words for each summary.
 Repeat the 2 steps 5 times now.
@@ -287,6 +292,7 @@ Additional Guidelines:
 - Avoid overly general terms unless they are crucially important to the text's theme.
 - Maintain the original language of the text.
 - Respect carefully the limitation of {{max_nb_keyword}} keywords.
+- Do not include, in any case, twice the same keyword or key phrase.
 
 Output Structure:
 Your response should follow this exact structure:
