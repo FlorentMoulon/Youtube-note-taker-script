@@ -6,7 +6,7 @@ from Scrapper import Scrapper
 from files.prompt_functions import *
 
 def get_file_content(path):
-    with open(path, 'r') as file:
+    with open(path, 'r', encoding="utf-8") as file:
         return file.read()
 
 
@@ -28,7 +28,7 @@ class Parser:
     def get_prompt(self, name):
         return self.prompts.get(name)
 
-    def replace_variable(self, content, file_name):
+    def replace_variable(self, content, file_name, theme):
         content = content.replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
         content = content.replace("{{file_name}}", file_name)
         
@@ -39,24 +39,25 @@ class Parser:
         content = content.replace("{{video_tags}}", video_details.get('video_tags'))
         content = content.replace("{{video_title}}", video_details.get('title'))
         content = content.replace("{{video_url}}", video_details.get('url'))
+        content = content.replace("{{theme}}", theme)
         
         content = content.replace("{{video_description}}", self.scrapper.get_video_description())
         
-        content = self.replace_transcript(content)
+        content = self.replace_transcript(content, theme)
 
         for variable in self.variables:
             content = content.replace("{{"+variable+"}}", self.variables[variable])
             
-        content = self.replace_prompt(content, file_name)
+        content = self.replace_prompt(content, file_name, theme)
         
         return content
     
-    def replace_prompt(self, content, file_name):
+    def replace_prompt(self, content, file_name, theme):
         for prompt in self.prompts:
             if content.find("{{"+prompt+"}}") != -1:
                 # parse prompt
                 prompt_text = self.prompts[prompt]
-                prompt_text = self.replace_variable(prompt_text, file_name)
+                prompt_text = self.replace_variable(prompt_text, file_name, theme)
 
                 # generate completion
                 completion = self.generator.generate_chat_completion(
@@ -72,7 +73,7 @@ class Parser:
                 content = content.replace("{{"+prompt+"}}", completion)
         return content
 
-    def replace_transcript(self, content):
+    def replace_transcript(self, content, theme):
         if content.find("{{transcript}}") != -1:
             content = content.replace("{{transcript}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
             
@@ -80,7 +81,7 @@ class Parser:
             content = content.replace("{{transcript_with_timecode}}", self.scrapper.get_transcript(selected_chapters=self.selected_chapters, with_timecode=True))
             
         if content.find("{{llm_sized_transcript}}") != -1:
-            shorter_transcript = self.get_shorter_transcript(self.scrapper.get_transcript(selected_chapters=self.selected_chapters))
+            shorter_transcript = self.get_shorter_transcript(self.scrapper.get_transcript(selected_chapters=self.selected_chapters), theme)
             content = content.replace("{{llm_sized_transcript}}", shorter_transcript)
             
         if content.find("{{transcript_without_sponsorship}}") != -1:
@@ -134,13 +135,13 @@ class Parser:
 
 # --------------- Chunking and Summarization ---------------
 
-    def get_shorter_transcript(self, transcript: str) -> str:
+    def get_shorter_transcript(self, transcript: str, theme: str) -> str:
         if self.short_transcript.get(transcript) is None:
-            self.short_transcript[transcript] = self.generate_shorter_transcript(transcript)
+            self.short_transcript[transcript] = self.generate_shorter_transcript(transcript, theme)
             
         return self.short_transcript.get(transcript)
 
-    def generate_shorter_transcript(self, transcript: str) -> str:
+    def generate_shorter_transcript(self, transcript: str, theme: str) -> str:
         margin = 1000  # Margin to account for additional tokens in the final summary
         
         model_max_tokens = self.generator.get_model_max_tokens()
@@ -160,7 +161,7 @@ class Parser:
         # Summarize each chunk
         summarize_chunk_size = (model_max_tokens - margin) // len(chunks)
         summarize_chunk_size_inword = math.floor(summarize_chunk_size // 1.5)
-        summaries = [self.summarize_chunk(self.generate_transcript_without_sponsorship(chunk), summarize_chunk_size_inword) for chunk in chunks]
+        summaries = [self.summarize_chunk(self.generate_transcript_without_sponsorship(chunk), summarize_chunk_size_inword, theme) for chunk in chunks]
         
         # Combine summaries
         combined_summary = " ".join(summaries)
@@ -209,10 +210,15 @@ class Parser:
         return chunks
 
 
-    def summarize_chunk(self, chunk: str, expected_size: int, generator=Generator()) -> str:
-        return generator.generate_chat_completion(
+    def summarize_chunk(self, chunk: str, expected_size: int, theme=None) -> str:
+        chunk_prompt = "SUMMARIZE_CHUNK" if (theme=="" or theme==None) else "SUMMARIZE_CHUNK_WITH_THEME"
+            
+        user_prompt = self.replace_variable(self.prompts[chunk_prompt], "", theme)
+        user_prompt = user_prompt.replace("{{chunk}}", chunk).replace("{{expected_size}}", str(expected_size))
+        
+        return self.generator.generate_chat_completion(
             system_prompt = "",
-            user_prompt = self.prompts["SUMMARIZE_CHUNK"].replace("{{chunk}}", chunk).replace("{{expected_size}}", str(expected_size))
+            user_prompt = user_prompt
         )
 
 

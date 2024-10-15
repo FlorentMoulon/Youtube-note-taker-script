@@ -159,6 +159,12 @@ class App:
         file_name_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
         self.file_name_entry = Entry(self.main_frame)
         self.file_name_entry.pack(pady=(0, padding_y), padx=padding_x, fill='x')
+        
+        # Theme Entry
+        theme_label = Label(self.main_frame, text="Theme to focus on:")
+        theme_label.pack(pady=(padding_y, 0), padx=padding_x, anchor='w')
+        self.theme_entry = Entry(self.main_frame)
+        self.theme_entry.pack(pady=(0, padding_y), padx=padding_x, fill='x')
 
         # Chapter selection frame
         chapter_label = Label(self.main_frame, text="Select Chapters:")
@@ -190,10 +196,11 @@ class App:
         template_path = self.template_path_combo.get()
         prompts_path = self.prompts_path_combo.get()
         selected_chapters = [chapter_data for chapter_data, var in zip(self.chapters_data, self.chapter_vars) if var.get()]
+        theme = self.theme_entry.get()
         
         self.save_fields()
     
-        generate_note_file(video_url, file_name, save_path, template_path, prompts_path, selected_chapters)
+        generate_note_file(video_url, file_name, save_path, template_path, prompts_path, selected_chapters, theme)
 
     def select_folder(self):
         folder_path = filedialog.askdirectory()
@@ -269,7 +276,8 @@ class App:
             "template_path": list(self.template_path_combo['values']),
             "prompts_path": list(self.prompts_path_combo['values']),
             "file_name": self.file_name_entry.get(),
-            "video_url": self.url_entry.get()
+            "video_url": self.url_entry.get(),
+            "theme": self.theme_entry.get()
         }
         with open(self.config_file, 'w', encoding="utf-8") as f:
             json.dump(field_data, f, indent=4)
@@ -283,6 +291,7 @@ class App:
             self.prompts_path_combo['values'] = field_data.get("prompts_path", [])
             self.file_name_entry.insert(0, field_data.get("file_name", ""))
             self.url_entry.insert(0, field_data.get("video_url", ""))
+            self.theme_entry.insert(0, field_data.get("theme", ""))
             
             # Set the most recent value (first in the list) as the current value
             if self.path_combo['values']:

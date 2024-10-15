@@ -10,7 +10,7 @@ class Logger:
         if not self.is_active:
             return
         
-        with open(self.log_path, "a") as f:
+        with open(self.log_path, "a", encoding="utf-8") as f:
             f.write("\n---\n")
 
     def save_log(self, entry):

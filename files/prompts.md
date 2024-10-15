@@ -69,6 +69,36 @@ Répondez uniquement avec le résumé, sans aucun texte supplémentaire.
 ```
 
 
+```SUMMARIZE_CHUNK_WITH_THEME
+Vous êtes un expert en résumé de texte, capable de condenser l'information tout en préservant les points clés et le contexte, en vous concentrant sur un thème spécifique.
+
+Tâche : Résumez le texte fourni en {{expected_size}} mots ou moins, en vous concentrant sur le thème : {{theme}}.
+
+Contexte : Ce texte est un extrait d'un document plus long. D'autres extraits seront résumés séparément, et tous les résumés seront combinés pour former un résumé final centré sur le thème : {{theme}}.
+
+Instructions :
+- Préservez les informations essentielles, les faits clés et les idées principales qui sont directement liés au thème {{theme}}.
+- Maintenez la chronologie et les relations causales si elles sont présentes et pertinentes pour le thème.
+- Conservez les noms propres, les dates et les chiffres importants qui sont en rapport avec le thème.
+- Gardez le ton et le style du texte original.
+- Assurez-vous que votre résumé puisse être compris indépendamment, mais qu'il s'intègre bien avec d'autres résumés, tous centrés sur le thème : {{theme}}.
+- Utilisez la même langue que le texte original.
+- Pour les informations importantes indirectement liées au thème, expliquez brièvement leur lien avec {{theme}}.
+- Ignorez les informations qui n'ont aucun rapport avec le thème : {{theme}}.
+
+Règles importantes :
+- Ne commencez pas par "Ce texte parle de..." ou des phrases similaires.
+- N'incluez pas de commentaires personnels ou d'analyses supplémentaires.
+- Ne mentionnez pas que c'est un résumé ou un extrait.
+
+Texte à résumer, en se concentrant sur le thème {{theme}} :
+{{chunk}}
+
+Répondez uniquement avec le résumé centré sur le thème, sans aucun texte supplémentaire.
+```
+
+
+
 ```REMOVE_SPONSOR
 You are a precise text editor. Your task is to clean the provided text by removing specific parts while maintaining the integrity of the remaining content. Follow these instructions carefully:
 
@@ -107,7 +137,7 @@ Process the following text according to these instructions:
 
 
 > language: french
-> min_nb_word_for_note: 700
+> min_nb_word_for_note: 400
 > max_nb_word_for_note: 1000
 > percentage_for_conclusion: 20
 
@@ -148,6 +178,43 @@ It's really important that you only use {{language}} for your answer, I beg you.
 
 Create notes based on the following video transcript :
 video title : {{video_title}}
+{{llm_sized_transcript}}
+```
+
+
+```prompt_detailed_note_theme
+You are an expert note-taker with a talent for extracting and organizing theme-specific information from complex sources. You understand all languages but will respond only in {{language}}.
+
+Your task is to create focused, in-depth notes on the theme "{{theme}}" based on the provided YouTube video transcript. Follow these guidelines:
+
+1. Content Focus:
+   - Extract ONLY information directly related to the theme "{{theme}}".
+   - Disregard any content that doesn't explicitly connect to this theme, including tangents, sponsored content, or off-topic discussions.
+
+2. Structure:
+   - Organize information into a logical hierarchy using Markdown syntax.
+   - Use ## for main sections and appropriate sub-levels (###, ####) for subsections.
+
+3. Depth and Detail:
+   - Provide a thorough exploration of the theme, including key concepts, supporting details, and examples.
+   - Include relevant definitions, statistics, and data points that pertain to the theme.
+   - Incorporate significant theme-related quotes, properly attributed.
+
+4. Formatting for Clarity:
+   - Utilize bullet points or numbered lists to enhance readability.
+   - Apply bold or italic text to emphasize crucial theme-related information.
+   - If diagrams or charts relevant to the theme are described, represent them textually or with ASCII art if feasible.
+
+5. Tone and Style:
+   - Maintain a neutral, academic tone throughout.
+   - Prioritize accuracy and clarity in conveying theme-specific content.
+
+6. Exclusion Criteria:
+   - Omit any information not directly related to "{{theme}}".
+   - Do not include general introductions, conclusions, or transitions unless they contain theme-specific content.
+
+Create focused thematic notes based on the following transcript, strictly adhering to the theme "{{theme}}":
+
 {{llm_sized_transcript}}
 ```
 

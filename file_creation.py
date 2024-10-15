@@ -41,7 +41,7 @@ def get_chapters_data(youtube_url):
 def is_valid_path(path):
     return os.path.exists(path)
 
-def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[]):
+def generate_note_file(youtube_url, file_name, folder_path, template_path, prompt_path, selected_chapters=[], theme=None):
     logger.landmark_log()
     
     # test if the folder path exists
@@ -59,10 +59,10 @@ def generate_note_file(youtube_url, file_name, folder_path, template_path, promp
     # Generate notes
     parser = Parser(prompt_path, scrapper, selected_chapters, generator, logger)
     
-    file_name = parser.replace_variable(file_name, file_name)
+    file_name = parser.replace_variable(file_name, file_name, theme)
     file_name = sanitize_filename(file_name)
     
-    md_content = parser.replace_variable(prepare_content_from_template(template_path), file_name)
+    md_content = parser.replace_variable(prepare_content_from_template(template_path), file_name, theme)
     
     # Save notes to file
     create_markdown_file(md_content, file_name, folder_path)
@@ -96,7 +96,7 @@ def create_markdown_file(md_content, file_name, folder_path):
 def prepare_content_from_template(template_path):
     content = ""
 
-    with open(template_path, 'r') as file:
+    with open(template_path, 'r', encoding="utf-8") as file:
         content = file.read()
     
     # remove instruction (everything before '---')
