@@ -3,6 +3,7 @@ from youtube_transcript_api.formatters import TextFormatter
 from bs4 import BeautifulSoup
 import requests
 import re
+from Logger import Logger
 
 
 
@@ -93,7 +94,7 @@ def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_time
             filtered_chapters = [chapter for chapter in chapter_divided_transcript if chapter['title'] in selected_titles]
 
         for chapter in filtered_chapters:
-            transcript_text += f"\n# {chapter['title']}\n{chapter['content']}\n"
+            transcript_text += f"\n# chapter title : {chapter['title']}\n{chapter['content']}\n"
         return transcript_text
     
         
@@ -195,7 +196,7 @@ def get_chapter_divided_transcript(video_url, with_timestamps=False):
 
 
 class Scrapper:
-    def __init__(self, youtube_url, logger):
+    def __init__(self, youtube_url, logger = Logger()):
         self.youtube_url = youtube_url
         self.logger = logger
         self.video_id = get_video_id(youtube_url)

@@ -1,8 +1,10 @@
 .env
 .venv/
+faiss_index/
+models_cache/
+__pycache__/
 saved_fields.json
 test.py
-__pycache__/
 out/
 log.md
 info.md
