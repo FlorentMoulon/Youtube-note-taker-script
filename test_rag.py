@@ -85,6 +85,7 @@ class TranscriptRAG:
     def process_transcript(self, youtube_url: str) -> None:
         transcript = self.get_transcript(youtube_url)
         self.vectorstore = self.create_vectorstore(transcript)
+        print("Transcript processed successfully!")
 
     def query_transcript(self, question: str, k: int = 7) -> dict:
         if not self.vectorstore:
@@ -95,23 +96,25 @@ class TranscriptRAG:
                 raise ValueError("No transcript has been processed yet")
         
         # Create retrieval chain
-        retriever = self.vectorstore.as_retriever(
-            search_type="similarity",
-            search_kwargs={"k": k}
+        retrieval_chain = (
+            self.vectorstore.as_retriever(
+                search_type="similarity",
+                search_kwargs={"k": k}
+            )
         )
         
         # Get relevant documents
-        relevant_docs = retriever.get_relevant_documents(question)
+        relevant_docs = retrieval_chain.invoke(question)
         
-        # Create and run the chain
-        chain = (
+        # Create and run the QA chain
+        qa_chain = (
             self.prompt
             | self.llm
             | StrOutputParser()
         )
         
         # Get response
-        response = chain.invoke({
+        response = qa_chain.invoke({
             "context": "\n".join(doc.page_content for doc in relevant_docs),
             "question": question
         })
@@ -122,17 +125,12 @@ class TranscriptRAG:
         }
 
 def main():
-    # Example usage
     rag = TranscriptRAG()
-    
-    # Process video transcript
     video_url = "https://www.youtube.com/watch?v=TOvPlPi1rSE"
+    question = "Quelle sont les 5 points positif du film ?"
+    
     try:
         rag.process_transcript(video_url)
-        print("Transcript processed successfully!")
-        
-        # Query the transcript
-        question = "Quelle sont les 5 points positif du film ?"
         response = rag.query_transcript(question)
         
         print("\nAnswer:")

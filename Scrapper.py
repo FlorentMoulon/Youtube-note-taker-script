@@ -138,6 +138,9 @@ def get_video_chapters(video_url):
     description = get_video_description(video_url)
     chapters = []
     
+    # Remove everything before the '00:00' timestamp
+    description = description[description.find('00:00'):]
+    
     # Regular expression to match time stamps (0:00, 1:23, 01:23, 1:23:45 etc.)
     time_pattern = r'^((?:\d{1,2}:)?\d{1,2}:\d{2})\s+(.+)$'
     
@@ -231,4 +234,4 @@ class Scrapper:
     
     def get_chapters_text(self):
         chapters = self.get_chapters()
-        return [f"{chapter['time']} {chapter['title']}" for chapter in chapters] 
+        return [f"{chapter['time']} {chapter['title']}" for chapter in chapters]
