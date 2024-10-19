@@ -81,6 +81,17 @@ def get_transcript_data(video_url):
         print(f"Error retrieving transcript: {e}")
         return None
 
+def get_timestamped_entry(entry):
+    start_time = int(entry['start'])
+    hours = start_time // 3600
+    minutes = (start_time % 3600) // 60
+    seconds = start_time % 60
+    text = entry['text']
+    if hours == 0:
+        timestamp = f"{minutes:02d}:{seconds:02d}"
+    else:
+        timestamp = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    return (f"[{timestamp}] {text}")
 
 def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_timestamps=False):
     transcript_text =""
@@ -102,11 +113,10 @@ def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_time
         transcript_data = get_transcript_data(video_url)
         formatted_transcript = []
         for entry in transcript_data:
-            start_time = int(entry['start'])
-            text = entry['text']
-            timestamp = f"{start_time // 60:02d}:{start_time % 60:02d}"
-            formatted_transcript.append(f"[{timestamp}] {text}")
+            formatted_transcript.append(get_timestamped_entry(entry))
+
         transcript_text = "\n".join(formatted_transcript)
+    
     else:
         formatter = TextFormatter()
         transcript_text = formatter.format_transcript(get_transcript_data(video_url))
@@ -158,8 +168,6 @@ def get_video_chapters(video_url):
 
 
 def get_chapter_divided_transcript(video_url, with_timestamps=False):
-    # timestamp are not supported for chapter divided transcript yet
-    
     chapters = get_video_chapters(video_url)
     if not chapters or len(chapters) == 0:
         return get_transcript(video_url, with_chapter=False, with_timestamps=with_timestamps)
@@ -178,7 +186,10 @@ def get_chapter_divided_transcript(video_url, with_timestamps=False):
             current_chapter += 1
             current_chapter_text = []
         
-        current_chapter_text.append(entry['text'])
+        if with_timestamps:
+            current_chapter_text.append(get_timestamped_entry(entry))
+        else:
+            current_chapter_text.append(entry['text'])
     
     # Add the last chapter
     chapter_divided_transcript.append({
