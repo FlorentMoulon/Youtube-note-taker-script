@@ -81,16 +81,21 @@ def get_transcript_data(video_url):
         print(f"Error retrieving transcript: {e}")
         return None
 
-def get_timestamped_entry(entry):
+def get_timestamped_entry(entry, with_hours=True, with_minutes=True, with_seconds=False):
     start_time = int(entry['start'])
     hours = start_time // 3600
     minutes = (start_time % 3600) // 60
     seconds = start_time % 60
     text = entry['text']
-    if hours == 0:
-        timestamp = f"{minutes:02d}:{seconds:02d}"
-    else:
-        timestamp = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    timestamp = ""
+    if with_hours:
+        timestamp += f"{hours:02d}"
+    if with_minutes:
+        timestamp += ":" if timestamp!="" else ""
+        timestamp += f"{minutes:02d}"
+    if with_seconds:
+        timestamp += ":" if timestamp!="" else ""
+        timestamp += f"{seconds:02d}"
     return (f"[{timestamp}] {text}")
 
 def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_timestamps=False):
@@ -105,7 +110,9 @@ def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_time
             filtered_chapters = [chapter for chapter in chapter_divided_transcript if chapter['title'] in selected_titles]
 
         for chapter in filtered_chapters:
-            transcript_text += f"\n# chapter title : {chapter['title']}\n{chapter['content']}\n"
+            if with_timestamps:
+                timestamp_chapter = chapter['content'][chapter['content'].find("["):chapter['content'].find("]")+1]
+            transcript_text += f"\n{timestamp_chapter} Chapter title : {chapter['title']}\n{chapter['content']}\n"
         return transcript_text
     
         
@@ -246,3 +253,11 @@ class Scrapper:
     def get_chapters_text(self):
         chapters = self.get_chapters()
         return [f"{chapter['time']} {chapter['title']}" for chapter in chapters]
+
+
+def save_test_transcript(youtube_url="https://www.youtube.com/watch?v=AmQlEcuJrFw"):
+    s = Scrapper(youtube_url)
+    a = s.get_transcript(with_timestamps=True)
+
+    with open("transcript.txt", "w", encoding="utf-8") as f:
+        f.write(a)
