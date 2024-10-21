@@ -6,6 +6,8 @@ import re
 from Logger import Logger
 
 
+from pprint import pprint
+
 
 
 
@@ -80,6 +82,68 @@ def get_transcript_data(video_url):
     except NoTranscriptFound as e:
         print(f"Error retrieving transcript: {e}")
         return None
+
+
+
+def get_sponsor_segments(video_id):
+    # SponsorBlock API endpoint
+    base_url = "https://sponsor.ajay.app/api"
+    
+    # Convert video ID to URL-safe format
+    url_safe_video_id = video_id.replace('/', '_').replace('+', '-')
+    
+    try:
+        # Request sponsored segments
+        response = requests.get(
+            f"{base_url}/skipSegments",
+            params={
+                "videoID": url_safe_video_id,
+                # Category types to fetch:
+                # sponsor: Sponsored content
+                # selfpromo: Self promotion
+                # interaction: Like/Subscribe reminders
+                # intro: Intro animations
+                # outro: Outro animations
+                # preview: Preview/recap of content
+                # musicofftopic: Music section in non-music videos
+                "categories": '["sponsor", "selfpromo", "interaction", "intro", "outro", "preview"]'
+            }
+        )
+        
+        if response.status_code == 200:
+            segments = response.json()
+            # Extract start and end times from segments
+            return [(segment["segment"][0], segment["segment"][1]) for segment in segments]
+        elif response.status_code == 404:
+            # No segments found
+            return []
+        else:
+            print(f"Error accessing SponsorBlock API: {response.status_code}")
+            return []
+            
+    except Exception as e:
+        print(f"Error accessing SponsorBlock API: {e}")
+        return []
+
+def filter_transcript(transcript_data, sponsor_segments):
+    if not sponsor_segments or len(sponsor_segments) == 0:
+        return transcript_data
+        
+    filtered_transcript = []
+    
+    for entry in transcript_data:
+        # Check if current transcript entry falls within any sponsor segment
+        is_sponsored = any(
+            start_time <= entry['start'] <= end_time
+            for start_time, end_time in sponsor_segments
+        )
+        
+        if not is_sponsored:
+            filtered_transcript.append(entry)
+    
+    return filtered_transcript
+
+
 
 def get_timestamp_of_entry(entry, with_hours=True, with_minutes=True, with_seconds=False):
     start_time = int(entry['start'])
@@ -277,8 +341,98 @@ def save_test_transcript(youtube_url="https://www.youtube.com/watch?v=AmQlEcuJrF
 
     with open("transcript.txt", "w", encoding="utf-8") as f:
         f.write(a)
+
+
+
+
+
+def get_chapter_divided_transcript_data(transcript_data, chapters):
+    chapter_divided_transcript = []
+    current_chapter = 0
+    current_chapter_entries = []
+    for entry in transcript_data:
+        while current_chapter < len(chapters) - 1 and entry['start'] >= format_time_to_seconds(chapters[current_chapter + 1]['time']):
+            # if current_chapter_entries is empty, ie. everything have been revomed by sponsor_blocks, we don't add the chapter
+            if current_chapter_entries != []:
+                chapter_divided_transcript.append({
+                    'title': chapters[current_chapter]['title'],
+                    'entries': current_chapter_entries
+                })
+            current_chapter += 1
+            current_chapter_entries = []
+        current_chapter_entries.append(entry)
+
+    return chapter_divided_transcript
+
+
+
+def get_chapter_divided_text(chapter_divided_transcript, chapter_title_label="Chapter title: "):
+    chapter_divided_text = []
+    for chapter in chapter_divided_transcript:
+        first_timestamp = get_timestamp_of_entry(chapter['entries'][0])
+        chapter_text = first_timestamp
+        chapter_text += chapter_title_label + chapter['title'] + "\n"
         
+        old_timestamp = first_timestamp
+        for entry in chapter['entries']:
+            curent_timestamp = get_timestamp_of_entry(entry)
+            timestamp = ""
+            if curent_timestamp != old_timestamp :
+                old_timestamp = curent_timestamp
+                timestamp = f"{curent_timestamp} "
+            
+            chapter_text += f"{timestamp}{entry['text']}\n"
         
-s = Scrapper("https://www.youtube.com/watch?v=AmQlEcuJrFw")
-a = s.get_transcript(with_timestamps=True)
-print(a)
+        chapter_divided_text.append(chapter_text)
+    return chapter_divided_text
+
+
+def get_chunked_transcript(video_url, chunk_size_in_character=1000, chunk_overlap=0):
+    video_id = get_video_id(video_url)
+    
+    transcript_data = get_transcript_data(video_url)
+    
+    # Cleaning :
+    sponsor_blocks = get_sponsor_segments(video_id)
+    transcript_data = filter_transcript(transcript_data, sponsor_blocks)
+    #TODO : add more cleaning and triming
+    
+    # Chunking :
+    chunks = []
+    
+    chapters = get_video_chapters(video_url)
+    
+    if len(chapters) == 0:
+        return [] #TODO
+
+    
+    margin = 100 # for timestamp and chapter (in character)
+    
+    # Chunking with chapters
+    chapter_divided_transcript = get_chapter_divided_transcript_data(transcript_data, chapters)
+    chapter_divided_text = get_chapter_divided_text(chapter_divided_transcript)
+    
+    current_chunk = ""
+    for chapter in chapter_divided_transcript:
+        text_size = sum([len(entry['text']) for entry in chapter['entries']])
+        if text_size > chunk_size_in_character:
+            #TODO : split the chapter in chunks
+            pass
+        else:
+            pass
+
+url = "https://www.youtube.com/watch?v=GTl-rBo94rw" 
+# s = Scrapper(url)
+# t = get_transcript_data(url)
+# print(a)
+
+
+# sponso = get_sponsor_segments(get_video_id(url))
+
+# print(sponso)
+# ft = filter_transcript(t, sponso)
+
+# print(len(t))
+# print(len(ft))
+
+get_chunked_transcript(url)
