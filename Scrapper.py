@@ -81,7 +81,7 @@ def get_transcript_data(video_url):
         print(f"Error retrieving transcript: {e}")
         return None
 
-def get_timestamped_entry(entry, with_hours=True, with_minutes=True, with_seconds=False):
+def get_timestamp_of_entry(entry, with_hours=True, with_minutes=True, with_seconds=False):
     start_time = int(entry['start'])
     hours = start_time // 3600
     minutes = (start_time % 3600) // 60
@@ -96,9 +96,9 @@ def get_timestamped_entry(entry, with_hours=True, with_minutes=True, with_second
     if with_seconds:
         timestamp += ":" if timestamp!="" else ""
         timestamp += f"{seconds:02d}"
-    return (f"[{timestamp}] {text}")
+    return (f"[{timestamp}]")
 
-def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_timestamps=False):
+def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_timestamps=False, only_one_timestamp_per_minute=True):
     transcript_text =""
     
     if with_chapter and len(get_video_chapters(video_url))>0:
@@ -117,10 +117,20 @@ def get_transcript(video_url, with_chapter=True, selected_chapters=[] ,with_time
     
         
     if with_timestamps:
+        old_timestamp = ""
         transcript_data = get_transcript_data(video_url)
         formatted_transcript = []
+        
         for entry in transcript_data:
-            formatted_transcript.append(get_timestamped_entry(entry))
+            curent_timestamp = get_timestamp_of_entry(entry)
+            timestamp = ""
+            if not only_one_timestamp_per_minute:
+                timestamp = curent_timestamp
+            elif curent_timestamp != old_timestamp :
+                old_timestamp = curent_timestamp
+                timestamp = curent_timestamp
+                
+            formatted_transcript.append(f"{timestamp} {entry['text'].strip()}")
 
         transcript_text = "\n".join(formatted_transcript)
     
@@ -174,7 +184,7 @@ def get_video_chapters(video_url):
     return chapters
 
 
-def get_chapter_divided_transcript(video_url, with_timestamps=False):
+def get_chapter_divided_transcript(video_url, with_timestamps=False, only_one_timestamp_per_minute=True):
     chapters = get_video_chapters(video_url)
     if not chapters or len(chapters) == 0:
         return get_transcript(video_url, with_chapter=False, with_timestamps=with_timestamps)
@@ -183,6 +193,7 @@ def get_chapter_divided_transcript(video_url, with_timestamps=False):
     chapter_divided_transcript = []
     current_chapter = 0
     current_chapter_text = []
+    old_timestamp = ""
     
     for entry in transcript_data:
         while current_chapter < len(chapters) - 1 and entry['start'] >= format_time_to_seconds(chapters[current_chapter + 1]['time']):
@@ -194,9 +205,17 @@ def get_chapter_divided_transcript(video_url, with_timestamps=False):
             current_chapter_text = []
         
         if with_timestamps:
-            current_chapter_text.append(get_timestamped_entry(entry))
+            curent_timestamp = get_timestamp_of_entry(entry)
+            timestamp = ""
+            if not only_one_timestamp_per_minute:
+                timestamp = curent_timestamp
+            elif curent_timestamp != old_timestamp :
+                old_timestamp = curent_timestamp
+                timestamp = curent_timestamp
+                
+            current_chapter_text.append(f"{timestamp} {entry}")
         else:
-            current_chapter_text.append(entry['text'])
+            current_chapter_text.append(entry['text'].strip())
     
     # Add the last chapter
     chapter_divided_transcript.append({
@@ -212,9 +231,6 @@ def get_chapter_divided_transcript(video_url, with_timestamps=False):
         
         
     return chapter_divided_transcript
-
-
-
 
 class Scrapper:
     def __init__(self, youtube_url, logger = Logger()):
@@ -261,3 +277,8 @@ def save_test_transcript(youtube_url="https://www.youtube.com/watch?v=AmQlEcuJrF
 
     with open("transcript.txt", "w", encoding="utf-8") as f:
         f.write(a)
+        
+        
+s = Scrapper("https://www.youtube.com/watch?v=AmQlEcuJrFw")
+a = s.get_transcript(with_timestamps=True)
+print(a)
