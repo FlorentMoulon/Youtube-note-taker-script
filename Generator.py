@@ -56,3 +56,12 @@ class Generator:
 
     def estimate_token_count(self, prompt: str) -> int:
         return len(prompt)/3.8   # Rough estimate: 1 token ≈ 3.8 characters
+    
+    def token_to_char(self, nb_token: int) -> int:
+        return nb_token * 3.8   # Rough estimate: 1 token ≈ 3.8 characters
+    
+    def word_to_token(self, nb_word: int) -> int:
+        return nb_word * 2 # Rough estimate: 1 word ≈ 2 tokens
+    
+    def token_to_word(self, nb_token: int) -> int:
+        return nb_token // 2 # Rough estimate: 1 word ≈ 2 tokens

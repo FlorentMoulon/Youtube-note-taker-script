@@ -1,3 +1,4 @@
+import math
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound
 from youtube_transcript_api.formatters import TextFormatter
 from bs4 import BeautifulSoup
@@ -345,6 +346,18 @@ def save_test_transcript(youtube_url="https://www.youtube.com/watch?v=AmQlEcuJrF
 
 
 
+def create_chunks_with_overlap(text: str, chunk_size_in_character: int, overlap: int):
+    char = text.split('')
+    chunks = []
+    start = 0
+    while start < len(char) - overlap:
+        end = start + chunk_size_in_character
+        chunk = ' '.join(char[start:end])
+        chunks.append(chunk)
+        start += chunk_size_in_character - overlap
+    return chunks
+
+
 
 def get_chapter_divided_transcript_data(transcript_data, chapters):
     chapter_divided_transcript = []
@@ -398,28 +411,41 @@ def get_chunked_transcript(video_url, chunk_size_in_character=1000, chunk_overla
     #TODO : add more cleaning and triming
     
     # Chunking :
-    chunks = []
+    chunks = [""]
     
     chapters = get_video_chapters(video_url)
     
+    # Chunking without chapters
     if len(chapters) == 0:
         return [] #TODO
 
-    
-    margin = 100 # for timestamp and chapter (in character)
     
     # Chunking with chapters
     chapter_divided_transcript = get_chapter_divided_transcript_data(transcript_data, chapters)
     chapter_divided_text = get_chapter_divided_text(chapter_divided_transcript)
     
-    current_chunk = ""
-    for chapter in chapter_divided_transcript:
-        text_size = sum([len(entry['text']) for entry in chapter['entries']])
-        if text_size > chunk_size_in_character:
-            #TODO : split the chapter in chunks
-            pass
+    i = 0
+    for chapter_text in chapter_divided_text:
+        if len(chapter_text) > chunk_size_in_character:
+            # we need to split the chapter text into chunks and add them to the list
+            chapter_chunks = create_chunks_with_overlap(chapter_text, chunk_size_in_character, chunk_overlap) #TODO fix convertion between word and caracter
+            for chunk in chapter_chunks:
+                chunks[i] += chunk + "\n"
+                chunks.append("")
+                i += 1
+        elif len(chapter_text) + len(chunks[i]) > chunk_size_in_character:
+            # we add a new chunk with the chapter text inside
+            chunks.append(chapter_text + "\n")
+            i += 1
         else:
-            pass
+            # we add the chapter text to the current chunk
+            chunks[i] += chapter_text + "\n"
+
+    if len(chunks)>0 and chunks[-1] == "":
+        chunks.pop()
+
+    return chunks
+
 
 url = "https://www.youtube.com/watch?v=GTl-rBo94rw" 
 # s = Scrapper(url)
@@ -435,4 +461,23 @@ url = "https://www.youtube.com/watch?v=GTl-rBo94rw"
 # print(len(t))
 # print(len(ft))
 
-get_chunked_transcript(url)
+
+from Generator import Generator
+g = Generator()
+
+margin = 1000 # tokens
+max_token_chunk = g.get_model_max_tokens() - margin
+max_char_chunk = g.token_to_char(max_token_chunk)
+
+print("max_token_chunk: ",max_token_chunk)
+print("max_char_chunk: ",max_char_chunk)
+
+
+
+chunks = get_chunked_transcript(url, max_char_chunk, math.floor(max_char_chunk/10))
+
+
+print("\n\n\n")
+for chunk in chunks:
+    print(chunk[:100])
+    print("\n---------")
