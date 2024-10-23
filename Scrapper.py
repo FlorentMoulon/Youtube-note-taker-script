@@ -428,7 +428,7 @@ def get_chunked_transcript(video_url, chunk_size_in_character=1000, chunk_overla
     for chapter_text in chapter_divided_text:
         if len(chapter_text) > chunk_size_in_character:
             # we need to split the chapter text into chunks and add them to the list
-            chapter_chunks = create_chunks_with_overlap(chapter_text, chunk_size_in_character, chunk_overlap) #TODO fix convertion between word and caracter
+            chapter_chunks = create_chunks_with_overlap(chapter_text, chunk_size_in_character, chunk_overlap)
             for chunk in chapter_chunks:
                 chunks[i] += chunk + "\n"
                 chunks.append("")
@@ -452,22 +452,13 @@ url = "https://www.youtube.com/watch?v=GTl-rBo94rw"
 # t = get_transcript_data(url)
 # print(a)
 
-
-# sponso = get_sponsor_segments(get_video_id(url))
-
-# print(sponso)
-# ft = filter_transcript(t, sponso)
-
-# print(len(t))
-# print(len(ft))
-
-
 from Generator import Generator
-g = Generator()
+g = Generator(Logger(is_active=True))
 
-margin = 1000 # tokens
+margin = 1500 # tokens
 max_token_chunk = g.get_model_max_tokens() - margin
 max_char_chunk = g.token_to_char(max_token_chunk)
+max_word_model = g.token_to_word(max_token_chunk)
 
 print("max_token_chunk: ",max_token_chunk)
 print("max_char_chunk: ",max_char_chunk)
@@ -477,7 +468,51 @@ print("max_char_chunk: ",max_char_chunk)
 chunks = get_chunked_transcript(url, max_char_chunk, math.floor(max_char_chunk/10))
 
 
-print("\n\n\n")
+print("\n---------")
 for chunk in chunks:
+    print("chunk length: ", len(chunk))
+    print("chunk tokens: ", g.estimate_token_count(chunk))
     print(chunk[:100])
+    print("\n---------")
+
+
+prompt_chunk = '''
+You are an expert in text summarization, capable of condensing information while preserving key points and context. Task: Summarize the provided text in {{expected_size}} words or less.
+
+Context: This text is an excerpt from a longer document. Other excerpts will be summarized separately, and all summaries will be combined to form a final summary.
+
+Rescpect carefully theses instructions :
+1. Preserve essential information, key facts, and main ideas.
+    If there is chapter title in the original text, you must keep them in your summary.
+2. Maintain chronology and causal relationships if present.
+    There is timestamp like [HH:mm] in the original text, you must keep them in your summary.
+3. Keep proper names, dates, and important figures.
+4. Retain the tone and style of the original text.
+5. Ensure your summary can be understood independently but integrates well with other summaries.
+6. Use the same language as the original text.
+
+Important Rules:
+- Do not begin with "Here is your summary", "This text is about..." or similar phrases.
+- Do not include personal comments or additional analysis.
+- Do not mention that it is a summary or an excerpt.
+
+Text to summarize: {{chunk}}
+
+Respond only with the summary, without any additional text.
+'''
+
+summary = []
+expected_size = f"{math.floor(0.75 * max_word_model/len(chunks))}"
+
+print("\n---------")
+print("expected_size: ", expected_size)
+
+for chunk in chunks:
+    summary.append(g.generate_chat_completion("", prompt_chunk.replace("{{expected_size}}", expected_size).replace("{{chunk}}", chunk)))
+
+print("\n---------")
+print("\n---------")
+print("\n---------")
+for s in summary:
+    print(s)
     print("\n---------")
